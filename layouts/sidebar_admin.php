@@ -10,9 +10,8 @@ $current_page = basename($_SERVER['PHP_SELF']);
     <div class="d-flex align-items-center">
       <img src="../../assets/img/logo.png" alt="Logo" class="system-logo me-2">
       <div class="system-title">
-        AUTOMATED LAND<br>
-        RECORDS MANAGEMENT <br>
-        SYSTEM
+        LAND RECORDS<br>
+        MANAGEMENT SYSTEM
       </div>
     </div>
     <hr class="sidebar-divider">

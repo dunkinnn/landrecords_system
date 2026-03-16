@@ -13,57 +13,61 @@ $fullname   = $_SESSION['fullname'] ?? 'No Fullname Set';
 $role       = $_SESSION['role'] ?? 'No Role Set';
 $user_id    = $_SESSION['user_id'] ?? 0;
 
-// Notifications DB query disabled to prevent rendering glitches and extra load.
-// Keep a default value to avoid undefined variable notices in the template.
+// Notifications DB query disabled
 $unreadCount = 0;
-
-/*
-if ($user_id && isset($conn)) {
-  $sqlNotif = "SELECT COUNT(*) AS unread FROM tbl_notifications WHERE user_id = ? AND is_read = 0";
-  if ($stmtNotif = $conn->prepare($sqlNotif)) {
-    $stmtNotif->bind_param("i", $user_id);
-    $stmtNotif->execute();
-    $resultNotif = $stmtNotif->get_result();
-    $rowNotif = $resultNotif->fetch_assoc();
-    $unreadCount = $rowNotif['unread'] ?? 0;
-    $stmtNotif->close();
-  }
-}
-*/
-
 ?>
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <!-- Header HTML -->
 <nav class="navbar">
+
   <button id="sidebarToggle" class="btn d-lg-none me-3" aria-label="Toggle Sidebar">
     <span class="navbar-toggler-icon"></span>
   </button>
 
   <div class="header-user-info">
-    <!-- <?php if ($notifLink): ?>
-      <div class="notification-wrapper">
-        <a href="<?= htmlspecialchars($notifLink) ?>" aria-label="Notifications">
-          <img src="../../assets/img/icons/notification.png" alt="Notifications" class="notification-icon" title="Notifications">
-          <?php if ($unreadCount > 0): ?>
-            <span class="badge"><?= $unreadCount ?></span>
-          <?php endif; ?>
-        </a>
-      </div>
-    <?php endif; ?>
-    -->
 
-    <div class="profile-info">
-      <img src="<?= htmlspecialchars($profilePic) ?>" alt="Profile" class="profile-pic">
-      <div class="user-text">
-        <div class="user-fullname"><?= htmlspecialchars($fullname) ?></div>
-        <div class="user-role"><?= htmlspecialchars($role) ?></div>
+    <div class="profile-dropdown">
+
+      <div class="profile-info" onclick="toggleProfileMenu()">
+
+        <div class="profile-wrapper">
+          <img src="<?= htmlspecialchars($profilePic) ?>" alt="Profile" class="profile-pic">
+
+          <div class="dropdown-circle">
+            <i class="fa fa-chevron-down"></i>
+          </div>
+        </div>
+
       </div>
+
+      <div id="profileMenu" class="dropdown-menu">
+
+        <div class="dropdown-user">
+          <img src="<?= htmlspecialchars($profilePic) ?>" class="dropdown-pic">
+          <div>
+            <div class="dropdown-name"><?= htmlspecialchars($fullname) ?></div>
+            <div class="dropdown-role"><?= htmlspecialchars($role) ?></div>
+          </div>
+        </div>
+
+        <hr>
+
+        <a href="../profile/profile.php">My Profile</a>
+        <a href="../settings/settings.php">Settings</a>  
+      </div>
+
     </div>
+
   </div>
+
 </nav>
 
 <!-- Header CSS -->
 <style>
+
 .navbar {
   display: flex;
   align-items: center;
@@ -77,78 +81,138 @@ if ($user_id && isset($conn)) {
   top: 0;
   left: 0;
   z-index: 1040;
-  box-sizing: border-box;
 }
+
 #sidebarToggle {
   background: none;
   border: none;
   cursor: pointer;
 }
+
 .header-user-info {
   display: flex;
   align-items: center;
-  gap: 1rem;
   margin-left: auto;
 }
-.notification-wrapper {
+
+/* Profile */
+
+.profile-dropdown{
   position: relative;
 }
-.notification-icon {
-  width: 24px;
-  height: 24px;
+
+.profile-wrapper{
+  position: relative;
+  display: inline-block;
   cursor: pointer;
-  flex-shrink: 0;
 }
-.badge {
-  position: absolute;
-  top: -5px;
-  right: -5px;
-  background-color: red;
-  color: white;
-  border-radius: 50%;
-  font-size: 10px;
-  width: 16px;
-  height: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid white;
-}
-.profile-info {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
+
 .profile-pic {
   width: 40px;
   height: 40px;
   border-radius: 50%;
   object-fit: cover;
   border: 2px solid #52B028;
-  flex-shrink: 0;
 }
-.user-text {
+
+/* Small circle dropdown button */
+
+.dropdown-circle{
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 20px;
+  height: 20px;
+  background: #3a3b3c;
+  border-radius: 50%;
+  border: 2px solid #fff;
   display: flex;
-  flex-direction: column;
+  align-items: center;
   justify-content: center;
-  white-space: nowrap;
 }
-.user-fullname {
+
+.dropdown-circle i{
+  font-size: 10px;
+  color: white;
+}
+
+/* Dropdown menu */
+
+.dropdown-menu{
+  position: absolute;
+  right: 0;
+  top: 60px;
+  width: 230px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+  padding: 10px 0;
+  display: none;
+  z-index: 999;
+}
+
+.dropdown-menu a{
+  display: block;
+  padding: 10px 18px;
+  text-decoration: none;
+  color: #333;
+  font-size: 14px;
+}
+
+.dropdown-menu a:hover{
+  background: #f3f4f6;
+}
+
+.dropdown-menu hr{
+  border: none;
+  border-top: 1px solid #eee;
+  margin: 6px 0;
+}
+
+/* Dropdown profile header */
+
+.dropdown-user{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 15px;
+}
+
+.dropdown-pic{
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+}
+
+.dropdown-name{
   font-weight: 600;
-  font-size: 1rem;
-  line-height: 1.2;
-  color: #000;
 }
-.user-role {
-  font-size: 0.85rem;
-  color: #6c757d;
-  text-transform: capitalize;
-  margin-top: 2px;
-  margin-left: 20px;
+
+.dropdown-role{
+  font-size: 12px;
+  color: #777;
 }
-@media (max-width: 560px) {
-  .profile-info {
-    display: none;
+
+.logout{
+  color: #e74c3c;
+  font-weight: 600;
+}
+
+</style>
+
+<!-- Dropdown Script -->
+<script>
+
+function toggleProfileMenu(){
+  const menu = document.getElementById("profileMenu");
+
+  menu.style.display = menu.style.display === "block" ? "none" : "block";
+}
+
+window.onclick = function(event){
+  if(!event.target.closest('.profile-dropdown')){
+    document.getElementById("profileMenu").style.display = "none";
   }
 }
-</style>
+
+</script>
