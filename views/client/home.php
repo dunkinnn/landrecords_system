@@ -27,75 +27,53 @@ $currentYear = date('Y');
 <!-- Sidebar & Header -->
 <?php include_once '../../layouts/sidebar_client.php'; ?>
 <div class="main-content">
-  <?php include_once '../../layouts/header.php'; ?>
-
+  <?php include_once '../../layouts/header_client.php'; ?>
   <div class="container mt-4 px-4">
     <h2>Dashboard</h2>
-
-    <!-- 4 Dummy Cards Row -->
-    <div class="row g-4">
-      <!-- Total Registered Lands -->
-      <div class="col-md-3 col-sm-6">
-        <div class="dashboard-card">
-          <div class="card-title">
-            <i class="bi bi-house-fill card-icon"></i>
-            Total Registered Lands
-          </div>
-          <div class="d-flex align-items-center mt-2">
-            <div class="card-value">450</div>
-            <div class="trend-badge text-success ms-2">
-              5.8% <i class="bi bi-arrow-up"></i>
-            </div>
-          </div>
+    
+        <!-- 4 Dummy Cards Row -->
+        <div class="row g-4">
+          <!-- Total Properties Owned -->
+    <div class="col-md-3 col-sm-6">
+      <div class="dashboard-card">
+        <div class="card-title">
+          <i class="bi bi-house-fill card-icon"></i>
+          Properties Owned
         </div>
+        <div class="card-value">3</div>
       </div>
-
-      <!-- Total Properties Owned -->
-      <div class="col-md-3 col-sm-6">
-        <div class="dashboard-card">
-          <div class="card-title">
-            <i class="bi bi-people-fill card-icon"></i>
-            Total Properties Owned
-          </div>
-          <div class="d-flex align-items-center mt-2">
-            <div class="card-value">12</div>
-            <div class="trend-badge text-success ms-2">
-              2.3% <i class="bi bi-arrow-up"></i>
-            </div>
-          </div>
+    </div>
+    
+    <!-- Certificates Available -->
+    <div class="col-md-3 col-sm-6">
+      <div class="dashboard-card">
+        <div class="card-title">
+          <i class="bi bi-file-earmark-text card-icon"></i>
+          Certificates Available
         </div>
+        <div class="card-value">5</div>
       </div>
-
-      <!-- Transactions Today -->
-      <div class="col-md-3 col-sm-6">
-        <div class="dashboard-card">
-          <div class="card-title">
-            <i class="bi bi-currency-dollar card-icon"></i>
-            Transactions Today
-          </div>
-          <div class="d-flex align-items-center mt-2">
-            <div class="card-value">5</div>
-            <div class="trend-badge text-danger ms-2">
-              -1.2% <i class="bi bi-arrow-down"></i>
-            </div>
-          </div>
+    </div>
+    
+    <!-- Uploaded Documents -->
+    <div class="col-md-3 col-sm-6">
+      <div class="dashboard-card">
+        <div class="card-title">
+          <i class="bi bi-folder-fill card-icon"></i>
+          Uploaded Documents
         </div>
+        <div class="card-value">8</div>
       </div>
-
-      <!-- Total Tax Collected -->
-      <div class="col-md-3 col-sm-6">
-        <div class="dashboard-card">
-          <div class="card-title">
-            <i class="bi bi-receipt-cutoff card-icon"></i>
-            Total Tax Collected
-          </div>
-          <div class="d-flex align-items-center mt-2">
-            <div class="card-value">₱125,000</div>
-            <div class="trend-badge text-success ms-2">
-              8.1% <i class="bi bi-arrow-up"></i>
-            </div>
-          </div>
+    </div>
+    
+    <!-- Latest Update -->
+    <div class="col-md-3 col-sm-6">
+      <div class="dashboard-card">
+        <div class="card-title">
+          <i class="bi bi-clock-history card-icon"></i>
+          Last Property Update
         </div>
+        <div class="card-value">Mar 2026</div>
       </div>
     </div>
 

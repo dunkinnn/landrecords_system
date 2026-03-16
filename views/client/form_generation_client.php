@@ -30,7 +30,7 @@ $currentYear = date('Y');
 
 <div class="main-content">
 
-    <?php include_once '../../layouts/header.php'; ?>
+    <?php include_once '../../layouts/header_client.php'; ?>
 
     <div class="container mt-4 px-4">
 

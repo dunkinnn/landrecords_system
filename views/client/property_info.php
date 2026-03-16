@@ -19,7 +19,7 @@ date_default_timezone_set('Asia/Manila');
 <body>
   <?php include_once '../../layouts/sidebar_client.php'; ?>
   <div class="main-content">
-    <?php include_once '../../layouts/header.php'; ?>
+    <?php include_once '../../layouts/header_client.php'; ?>
     <div class="container mt-4 px-4">
       <h2 class="page-title mb-3">Property Information</h2>
       <div class="form-container">
