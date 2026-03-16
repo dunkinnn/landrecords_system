@@ -20,7 +20,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
   <!-- ===== NAVIGATION ===== -->
   <nav class="nav flex-column w-100 px-2 flex-grow-1">
 
-    <a href="dashboard.php" class="nav-link d-flex align-items-center <?= $current_page === 'dashboard.php' ? 'active' : '' ?>">
+    <a href="home.php" class="nav-link d-flex align-items-center <?= $current_page === 'home.php' ? 'active' : '' ?>">
       <img src="../../assets/img/icons/dashboard.png" class="sidebar-icon me-3">
       <span>Dashboard</span>
     </a>

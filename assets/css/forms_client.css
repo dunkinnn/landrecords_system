@@ -1,7 +1,91 @@
-/* === PAGE TITLE === */
-h2 {
-  color: #52B028;
-  margin-bottom: 1rem;
-  font-size: clamp(1.5rem, 2vw, 2.5rem);
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+/* PAGE TITLE */
+
+.page-title{
+color:#52B028;
+font-size:clamp(1.5rem,2vw,2.5rem);
+text-shadow:2px 2px 4px rgba(0,0,0,0.1);
+}
+
+/* CONTAINER */
+
+.form-container{
+background:#fff;
+padding:20px;
+border-radius:10px;
+box-shadow:0 2px 10px rgba(0,0,0,0.05);
+}
+
+/* CONTROLS */
+
+.form-controls{
+display:flex;
+justify-content:space-between;
+align-items:center;
+flex-wrap:wrap;
+gap:12px;
+}
+
+/* FILTER */
+
+.filter-group{
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+}
+
+.filter-input{
+width:180px;
+height:38px;
+}
+
+/* SEARCH */
+
+.search-group{
+display:flex;
+align-items:center;
+}
+
+.search-box .input-group-text{
+background:#fff;
+border-right:none;
+}
+
+.search-box .form-control{
+border-left:none;
+height:38px;
+}
+
+/* TABLE */
+
+.form-table{
+width:100%;
+}
+
+.form-table thead{
+background:#f8f9fa;
+}
+
+.form-table th{
+font-weight:600;
+font-size:14px;
+border-bottom:2px solid #dee2e6;
+}
+
+.form-table td{
+font-size:14px;
+vertical-align:middle;
+}
+
+.form-table tbody tr:hover{
+background:#f5f9f3;
+}
+
+/* RESPONSIVE */
+
+.table-responsive{
+overflow-x:auto;
+}
+
+body{
+overflow-x:hidden;
 }
