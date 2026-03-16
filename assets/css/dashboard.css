@@ -81,6 +81,63 @@ h2 {
   background: #f5f9f3;
 }
 
+/* DASHBOARD CARDS */
+.dashboard-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e9ecef;
+  transition: all 0.3s ease;
+}
+
+.dashboard-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+}
+
+.card-title {
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.card-icon {
+  font-size: 24px;
+  color: #52B028;
+}
+
+.card-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: #333;
+}
+
+.trend-badge {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.trend-badge i {
+  font-size: 12px;
+  margin-left: 3px;
+}
+
+/* RECENT ACTIVITIES */
+.recent-activities {
+  margin-top: 2rem;
+}
+
+.section-header {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
 /* RESPONSIVE */
 .table-responsive {
   overflow-x: auto;

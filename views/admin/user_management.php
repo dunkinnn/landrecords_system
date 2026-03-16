@@ -46,11 +46,6 @@ date_default_timezone_set('Asia/Manila');
           </div>
         </div>
 
-        <!-- TOTAL USERS -->
-        <div class="d-flex justify-content-between align-items-center mt-3">
-          <span class="text-muted">Total Users: 5</span>
-        </div>
-
         <!-- USER TABLE -->
         <div class="table-responsive mt-3">
           <table class="table table-striped form-table">

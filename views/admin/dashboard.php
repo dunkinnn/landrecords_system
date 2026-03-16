@@ -23,7 +23,7 @@ $currentYear = date('Y');
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
 
   <link rel="stylesheet" href="../../assets/css/layout.css" />
-  <link rel="stylesheet" href="../../assets/css/dashboard.css?v=1.0" />
+  <link rel="stylesheet" href="../../assets/css/dashboard.css?v=2.1" />
 </head>
 <body>
 
