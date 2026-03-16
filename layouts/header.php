@@ -56,8 +56,8 @@ $unreadCount = 3; // change this with DB query later
         <div class="dropdown-user">
           <img src="<?= htmlspecialchars($profilePic) ?>" class="dropdown-pic">
           <div>
-<div class="dropdown-name"><?= htmlspecialchars($fullname) ?></div>
-<div class="dropdown-role"><?= htmlspecialchars($role) ?></div>
+            <div class="dropdown-name"><?= htmlspecialchars($fullname) ?></div>
+            <div class="dropdown-role"><?= htmlspecialchars($role) ?></div>
           </div>
         </div>
 
@@ -250,10 +250,5 @@ window.onclick = function(event){
   if(!event.target.closest('.profile-dropdown')){
     document.getElementById("profileMenu").style.display = "none";
   }
-}
-
-// Example notification click
-function toggleNotifications(){
-  alert('Show notifications dropdown or page here');
 }
 </script>
