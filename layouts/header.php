@@ -56,8 +56,8 @@ $unreadCount = 3; // change this with DB query later
         <div class="dropdown-user">
           <img src="<?= htmlspecialchars($profilePic) ?>" class="dropdown-pic">
           <div>
-            <div class="dropdown-name"><?= htmlspecialchars($fullname) ?></div>
-            <div class="dropdown-role"><?= htmlspecialchars($role) ?></div>
+<div class="dropdown-name"><?= htmlspecialchars($fullname) ?></div>
+<div class="dropdown-role"><?= htmlspecialchars($role) ?></div>
           </div>
         </div>
 

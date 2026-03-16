@@ -24,7 +24,8 @@ $currentYear = date('Y');
   <div class="main-content">
     <?php include_once '../../layouts/header.php'; ?>
     <div class="container mt-4 px-4">
-      <h2>Dashboard</h2>
+        <h2>Form Generation</h2>
+
     </div>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

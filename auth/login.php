@@ -5,17 +5,16 @@ require_once __DIR__ . "/../includes/db.php";
 $message = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-
     $username = trim($_POST['username']);
     $password = trim($_POST['password']);
 
     if (!empty($username) && !empty($password)) {
-
-        $stmt = $conn->prepare("SELECT user_id, password, role FROM tbl_users WHERE username = ?");
+        // Fetch the user by username
+        $stmt = $conn->prepare("SELECT user_id, fullname, password, role FROM tbl_users WHERE username = ?");
         $stmt->bind_param("s", $username);
         $stmt->execute();
         $stmt->store_result();
-        $stmt->bind_result($user_id, $db_password, $role);
+        $stmt->bind_result($user_id, $db_fullname, $db_password, $role);
 
         if ($stmt->num_rows == 1) {
             $stmt->fetch();
@@ -23,23 +22,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if (!in_array($role, ["client", "admin"])) {
                 $message = "<div class='alert alert-danger text-center'>Access denied.</div>";
             } else {
-                // Remove any accidental spaces from DB password
-                $db_password = trim($db_password);
+                $login_success = false;
 
                 if ($role === "client") {
                     $login_success = password_verify($password, $db_password);
-                    } else if ($role === "admin") {
-                        $login_success = ($password === $db_password);                
-                        } else {
-                    $login_success = false;
+                } else if ($role === "admin") {
+                    $login_success = ($password === $db_password);
                 }
 
                 if ($login_success) {
+                    // ✅ Set session with DB fullname
                     $_SESSION['user_id'] = $user_id;
                     $_SESSION['username'] = $username;
+                    $_SESSION['fullname'] = $db_fullname; // use database value
                     $_SESSION['role'] = $role;
 
-                    // Redirect based on role
+                    // Redirect
                     if ($role === "client") {
                         header("Location: ../views/client/home.php");
                     } else if ($role === "admin") {
@@ -50,13 +48,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $message = "<div class='alert alert-danger text-center'>Incorrect password.</div>";
                 }
             }
-
         } else {
             $message = "<div class='alert alert-danger text-center'>Username not found.</div>";
         }
 
         $stmt->close();
-
     } else {
         $message = "<div class='alert alert-warning text-center'>All fields are required.</div>";
     }

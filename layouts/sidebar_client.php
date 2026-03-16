@@ -25,29 +25,14 @@ $current_page = basename($_SERVER['PHP_SELF']);
       <span>Dashboard</span>
     </a>
 
-    <a href="landmanagement.php" class="nav-link d-flex align-items-center <?= $current_page === 'landmanagement.php' ? 'active' : '' ?>">
+    <a href="property_info.php" class="nav-link d-flex align-items-center <?= $current_page === 'property_info.php' ? 'active' : '' ?>">
       <img src="../../assets/img/icons/land.png" class="sidebar-icon me-3">
-      <span>Land Management</span>
+      <span>Property Information</span>
     </a>
 
-    <a href="documents.php" class="nav-link d-flex align-items-center <?= $current_page === 'documents.php' ? 'active' : '' ?>">
-      <img src="../../assets/img/icons/paper.png" class="sidebar-icon me-3">
-      <span>Documents & Images</span>
-    </a>
-
-    <a href="form_generation.php" class="nav-link d-flex align-items-center <?= $current_page === 'form_generation.php' ? 'active' : '' ?>">
+    <a href="form_generation_client.php" class="nav-link d-flex align-items-center <?= $current_page === 'form_generation_client.php' ? 'active' : '' ?>">
         <img src="../../assets/img/icons/google-forms.png" class="sidebar-icon me-3">
         <span>Form Generation</span>
-    </a>
-
-    <a href="audit_trail.php" class="nav-link d-flex align-items-center <?= $current_page === 'audit_trail.php' ? 'active' : '' ?>">
-      <img src="../../assets/img/icons/history.png" class="sidebar-icon me-3">
-      <span>Audit Trail</span>
-    </a>
-
-    <a href="user_management.php" class="nav-link d-flex align-items-center <?= $current_page === 'user_management.php' ? 'active' : '' ?>">
-      <img src="../../assets/img/icons/team.png" class="sidebar-icon me-3">
-      <span>User Management</span>
     </a>
 
   </nav>

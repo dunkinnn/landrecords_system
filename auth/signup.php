@@ -6,6 +6,7 @@ $message = "";
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $username = trim($_POST['username']);
+    $fullname = trim($_POST['fullname']);
     $phone    = trim($_POST['phone']);
     $password = trim($_POST['password']);
     $role     = "client";
@@ -13,8 +14,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (!empty($username) && !empty($phone) && !empty($password)) {
 
         // Check if username exists
-        $check = $conn->prepare("SELECT user_id FROM tbl_users WHERE username = ?");
-        $check->bind_param("s", $username);
+        $check = $conn->prepare("SELECT user_id FROM tbl_users WHERE username = ? OR fullname = ?");
+        $check->bind_param("ss", $username, $fullname);
         $check->execute();
         $check->store_result();
 
@@ -23,7 +24,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         } else {
             $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-            $stmt = $conn->prepare("INSERT INTO tbl_users (username, phone, password, role) VALUES (?, ?, ?, ?)");
+            $stmt = $conn->prepare("INSERT INTO tbl_users (username, fullname, phone, password, role) VALUES (?, ?, ?, ?)");
             $stmt->bind_param("ssss", $username, $phone, $hashed_password, $role);
 
             if ($stmt->execute()) {
@@ -64,6 +65,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <?php echo $message ?? ''; ?>
 
         <form method="POST" id="signupForm">
+            <div class="form-group">
+                <input type="text" name="fullname" placeholder="Full Name" required>
+            </div>
+
             <div class="form-group">
                 <input type="text" name="username" placeholder="Username" required>
             </div>
