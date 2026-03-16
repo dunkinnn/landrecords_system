@@ -54,9 +54,7 @@ $unreadCount = 0;
         </div>
 
         <hr>
-
-        <a href="../profile/profile.php">My Profile</a>
-        <a href="../settings/settings.php">Settings</a>  
+          <a href="../settings/settings.php">Settings</a>  
       </div>
 
     </div>
