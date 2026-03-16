@@ -13,8 +13,8 @@ $fullname   = $_SESSION['fullname'] ?? 'No Fullname Set';
 $role       = $_SESSION['role'] ?? 'No Role Set';
 $user_id    = $_SESSION['user_id'] ?? 0;
 
-// Notifications DB query disabled
-$unreadCount = 0;
+// Example unread notifications count
+$unreadCount = 3; // change this with DB query later
 ?>
 
 <!-- Font Awesome -->
@@ -29,6 +29,15 @@ $unreadCount = 0;
 
   <div class="header-user-info">
 
+    <!-- Notification Bell -->
+    <div class="notification-wrapper" onclick="toggleNotifications()">
+      <img src="../../assets/img/icons/bell.png" class="notification-icon" alt="Notifications">
+      <?php if($unreadCount > 0): ?>
+        <span class="notification-badge"><?= $unreadCount ?></span>
+      <?php endif; ?>
+    </div>
+
+    <!-- Profile Dropdown -->
     <div class="profile-dropdown">
 
       <div class="profile-info" onclick="toggleProfileMenu()">
@@ -40,7 +49,6 @@ $unreadCount = 0;
             <i class="fa fa-chevron-down"></i>
           </div>
         </div>
-
       </div>
 
       <div id="profileMenu" class="dropdown-menu">
@@ -54,7 +62,12 @@ $unreadCount = 0;
         </div>
 
         <hr>
-          <a href="../settings/settings.php">Settings</a>  
+        <a href="../profile/profile.php">
+          <img src="../../assets/img/icons/user.png" class="menu-icon"> Profile
+        </a>
+        <a href="../settings/settings.php">
+          <img src="../../assets/img/icons/settings.png" class="menu-icon"> Settings
+        </a>
       </div>
 
     </div>
@@ -65,7 +78,6 @@ $unreadCount = 0;
 
 <!-- Header CSS -->
 <style>
-
 .navbar {
   display: flex;
   align-items: center;
@@ -93,8 +105,37 @@ $unreadCount = 0;
   margin-left: auto;
 }
 
-/* Profile */
+/* Notification */
+.notification-wrapper {
+  position: relative;
+  margin-right: 15px;
+  cursor: pointer;
+}
 
+.notification-icon {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+
+.notification-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: #e74c3c;
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+/* Profile Dropdown */
 .profile-dropdown{
   position: relative;
 }
@@ -112,8 +153,6 @@ $unreadCount = 0;
   object-fit: cover;
   border: 2px solid #52B028;
 }
-
-/* Small circle dropdown button */
 
 .dropdown-circle{
   position: absolute;
@@ -135,7 +174,6 @@ $unreadCount = 0;
 }
 
 /* Dropdown menu */
-
 .dropdown-menu{
   position: absolute;
   right: 0;
@@ -150,11 +188,20 @@ $unreadCount = 0;
 }
 
 .dropdown-menu a{
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 10px;
   padding: 10px 18px;
   text-decoration: none;
   color: #333;
   font-size: 14px;
+}
+
+.menu-icon{
+  font-weight: 700;
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
 }
 
 .dropdown-menu a:hover{
@@ -168,7 +215,6 @@ $unreadCount = 0;
 }
 
 /* Dropdown profile header */
-
 .dropdown-user{
   display: flex;
   align-items: center;
@@ -191,19 +237,12 @@ $unreadCount = 0;
   color: #777;
 }
 
-.logout{
-  color: #e74c3c;
-  font-weight: 600;
-}
-
 </style>
 
 <!-- Dropdown Script -->
 <script>
-
 function toggleProfileMenu(){
   const menu = document.getElementById("profileMenu");
-
   menu.style.display = menu.style.display === "block" ? "none" : "block";
 }
 
@@ -213,4 +252,8 @@ window.onclick = function(event){
   }
 }
 
+// Example notification click
+function toggleNotifications(){
+  alert('Show notifications dropdown or page here');
+}
 </script>
