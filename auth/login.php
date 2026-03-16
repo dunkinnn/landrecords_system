@@ -26,11 +26,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 // Remove any accidental spaces from DB password
                 $db_password = trim($db_password);
 
-                // Check password: hashed for clients, plain text for admin
                 if ($role === "client") {
                     $login_success = password_verify($password, $db_password);
                     } else if ($role === "admin") {
-                        // Always plain text check
                         $login_success = ($password === $db_password);                
                         } else {
                     $login_success = false;
@@ -43,7 +41,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                     // Redirect based on role
                     if ($role === "client") {
-                        header("Location: ../views/client/dashboard.php");
+                        header("Location: ../views/client/home.php");
                     } else if ($role === "admin") {
                         header("Location: ../views/admin/dashboard.php");
                     }
@@ -84,7 +82,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             Manage land records. Automate assessments. Serve the community better.
         </p>
 
-        <!-- Display PHP message -->
         <?php echo $message ?? ''; ?>
 
         <form method="POST" id="loginForm">
@@ -114,10 +111,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     </div>
 
-<!-- Bootstrap JS Bundle -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- Spinner on submit with 3-second delay -->
 <script>
 document.querySelector("#loginForm").addEventListener("submit", function(e) {
     e.preventDefault();
