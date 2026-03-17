@@ -92,7 +92,7 @@ $unreadCount = 3;
         </div>
 
         <hr>
-        <a href="../profile/profile.php">
+        <a href="../admin/profile.php">
           <img src="../../assets/img/icons/user.png" class="menu-icon"> Profile
         </a>
         <a href="../settings/settings.php">
@@ -134,7 +134,7 @@ $unreadCount = 3;
   margin-left: auto;
 }
 
-/* Notification */
+/*For Notification */
 .notification-wrapper {
   position: relative;
   margin-right: 15px;
