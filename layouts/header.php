@@ -13,8 +13,8 @@ $fullname   = $_SESSION['fullname'] ?? 'No Fullname Set';
 $role       = $_SESSION['role'] ?? 'No Role Set';
 $user_id    = $_SESSION['user_id'] ?? 0;
 
-// Example unread notifications count
-$unreadCount = 3; // change this with DB query later
+// Example unread notifications count (replace with DB query)
+$unreadCount = 3;
 ?>
 
 <!-- Font Awesome -->
@@ -35,16 +35,47 @@ $unreadCount = 3; // change this with DB query later
       <?php if($unreadCount > 0): ?>
         <span class="notification-badge"><?= $unreadCount ?></span>
       <?php endif; ?>
+
+      <!-- Notifications Dropdown -->
+      <div id="notificationMenu" class="notification-dropdown">
+        <div class="notification-header"><strong>Notifications</strong></div>
+
+        <div class="notification-item">
+          <i class="fas fa-file-alt notif-icon"></i>
+          <div>
+            <div class="notif-text">Land Appraisal Sheet available</div>
+            <small>2 minutes ago</small>
+          </div>
+        </div>
+
+        <div class="notification-item">
+          <i class="fas fa-home notif-icon"></i>
+          <div>
+            <div class="notif-text">Property record updated</div>
+            <small>1 hour ago</small>
+          </div>
+        </div>
+
+        <div class="notification-item">
+          <i class="fas fa-check-circle notif-icon"></i>
+          <div>
+            <div class="notif-text">Document verified</div>
+            <small>Yesterday</small>
+          </div>
+        </div>
+
+        <div class="notification-footer">
+          <a href="../admin/notifications.php">View All Notifications</a>
+        </div>
+      </div>
     </div>
 
     <!-- Profile Dropdown -->
     <div class="profile-dropdown">
 
       <div class="profile-info" onclick="toggleProfileMenu()">
-
         <div class="profile-wrapper">
           <img src="<?= htmlspecialchars($profilePic) ?>" alt="Profile" class="profile-pic">
-
           <div class="dropdown-circle">
             <i class="fa fa-chevron-down"></i>
           </div>
@@ -52,7 +83,6 @@ $unreadCount = 3; // change this with DB query later
       </div>
 
       <div id="profileMenu" class="dropdown-menu">
-
         <div class="dropdown-user">
           <img src="<?= htmlspecialchars($profilePic) ?>" class="dropdown-pic">
           <div>
@@ -73,7 +103,6 @@ $unreadCount = 3; // change this with DB query later
     </div>
 
   </div>
-
 </nav>
 
 <!-- Header CSS -->
@@ -133,6 +162,65 @@ $unreadCount = 3; // change this with DB query later
   align-items: center;
   justify-content: center;
   pointer-events: none;
+}
+
+/* Notification Dropdown */
+.notification-dropdown{
+  position: absolute;
+  right: 0;
+  top: 45px;
+  width: 300px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+  display: none;
+  z-index: 999;
+  overflow: hidden;
+}
+
+.notification-header{
+  padding: 12px 15px;
+  border-bottom: 1px solid #eee;
+  font-size: 14px;
+}
+
+.notification-item{
+  display: flex;
+  gap: 10px;
+  padding: 12px 15px;
+  border-bottom: 1px solid #f1f1f1;
+  cursor: pointer;
+}
+
+.notification-item:hover{
+  background: #f6f8fa;
+}
+
+.notif-icon{
+  color: #52B028;
+  font-size: 16px;
+  margin-top: 3px;
+}
+
+.notif-text{
+  font-size: 13px;
+}
+
+.notification-item small{
+  color: #888;
+  font-size: 11px;
+}
+
+.notification-footer{
+  text-align: center;
+  padding: 10px;
+}
+
+.notification-footer a{
+  text-decoration: none;
+  font-size: 13px;
+  color: #52B028;
+  font-weight: 600;
 }
 
 /* Profile Dropdown */
@@ -236,7 +324,6 @@ $unreadCount = 3; // change this with DB query later
   font-size: 12px;
   color: #777;
 }
-
 </style>
 
 <!-- Dropdown Script -->
@@ -246,9 +333,18 @@ function toggleProfileMenu(){
   menu.style.display = menu.style.display === "block" ? "none" : "block";
 }
 
+function toggleNotifications(){
+  const menu = document.getElementById("notificationMenu");
+  menu.style.display = menu.style.display === "block" ? "none" : "block";
+}
+
 window.onclick = function(event){
   if(!event.target.closest('.profile-dropdown')){
     document.getElementById("profileMenu").style.display = "none";
+  }
+  if(!event.target.closest('.notification-wrapper')){
+    const notif = document.getElementById("notificationMenu");
+    if(notif) notif.style.display = "none";
   }
 }
 </script>

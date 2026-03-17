@@ -21,7 +21,7 @@ date_default_timezone_set('Asia/Manila');
 </head>
 
 <body>
-<?php include_once '../../layouts/sidebar_client.php'; ?>
+<?php include_once '../../layouts/sidebar_admin.php'; ?>
 <div class="main-content">
   <?php include_once '../../layouts/header_client.php'; ?>
 
