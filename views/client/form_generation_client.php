@@ -80,7 +80,6 @@ $currentYear = date('Y');
                             <th>Form Name</th>
                             <th>Description</th>
                             <th>Date Issued</th>
-                            <th>Actions</th>
                         </tr>
                     </thead>
 
@@ -91,40 +90,6 @@ $currentYear = date('Y');
                             <td>Real Property Field Appraisal Sheet – Land</td>
                             <td>Assessment sheet for land property</td>
                             <td>March 10, 2026</td>
-
-                            <td class="text-center">
-
-                                <div class="dropdown position-static">
-
-                                    <button class="btn btn-sm btn-link text-dark" data-bs-toggle="dropdown">
-                                        <i class="bi bi-three-dots-vertical"></i>
-                                    </button>
-
-                                    <ul class="dropdown-menu dropdown-menu-end shadow">
-
-                                        <li>
-                                            <a class="dropdown-item" href="#">
-                                                <i class="bi bi-eye me-2"></i> Preview
-                                            </a>
-                                        </li>
-
-                                        <li>
-                                            <a class="dropdown-item" href="#">
-                                                <i class="bi bi-download me-2"></i> Download
-                                            </a>
-                                        </li>
-
-                                        <li>
-                                            <a class="dropdown-item" href="#" target="_blank">
-                                                <i class="bi bi-printer me-2"></i> Print
-                                            </a>
-                                        </li>
-
-                                    </ul>
-
-                                </div>
-
-                            </td>
                         </tr>
 
                         <tr>
@@ -132,40 +97,6 @@ $currentYear = date('Y');
                             <td>Certification (No Improvements)</td>
                             <td>Official certification for property without improvements</td>
                             <td>March 12, 2026</td>
-
-                            <td class="text-center">
-
-                                <div class="dropdown position-static">
-
-                                    <button class="btn btn-sm btn-link text-dark" data-bs-toggle="dropdown">
-                                        <i class="bi bi-three-dots-vertical"></i>
-                                    </button>
-
-                                    <ul class="dropdown-menu dropdown-menu-end shadow">
-
-                                        <li>
-                                            <a class="dropdown-item" href="#">
-                                                <i class="bi bi-eye me-2"></i> Preview
-                                            </a>
-                                        </li>
-
-                                        <li>
-                                            <a class="dropdown-item" href="#">
-                                                <i class="bi bi-download me-2"></i> Download
-                                            </a>
-                                        </li>
-
-                                        <li>
-                                            <a class="dropdown-item" href="#" target="_blank">
-                                                <i class="bi bi-printer me-2"></i> Print
-                                            </a>
-                                        </li>
-
-                                    </ul>
-
-                                </div>
-
-                            </td>
                         </tr>
 
                         <tr>
@@ -173,40 +104,6 @@ $currentYear = date('Y');
                             <td>Certification (With Improvements)</td>
                             <td>Official certification for property with improvements</td>
                             <td>March 9, 2026</td>
-
-                            <td class="text-center">
-
-                                <div class="dropdown position-static">
-
-                                    <button class="btn btn-sm btn-link text-dark" data-bs-toggle="dropdown">
-                                        <i class="bi bi-three-dots-vertical"></i>
-                                    </button>
-
-                                    <ul class="dropdown-menu dropdown-menu-end shadow">
-
-                                        <li>
-                                            <a class="dropdown-item" href="#">
-                                                <i class="bi bi-eye me-2"></i> Preview
-                                            </a>
-                                        </li>
-
-                                        <li>
-                                            <a class="dropdown-item" href="#">
-                                                <i class="bi bi-download me-2"></i> Download
-                                            </a>
-                                        </li>
-
-                                        <li>
-                                            <a class="dropdown-item" href="#" target="_blank">
-                                                <i class="bi bi-printer me-2"></i> Print
-                                            </a>
-                                        </li>
-
-                                    </ul>
-
-                                </div>
-
-                            </td>
                         </tr>
 
                     </tbody>

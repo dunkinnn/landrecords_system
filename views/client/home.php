@@ -20,68 +20,73 @@ $currentYear = date('Y');
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" />
 
   <link rel="stylesheet" href="../../assets/css/layout.css" />
-  <link rel="stylesheet" href="../../assets/css/home_client.css?v=1.0" />
+  <link rel="stylesheet" href="../../assets/css/home_client.css?v=1.1" />
 </head>
 <body>
 
-<!-- Sidebar & Header -->
 <?php include_once '../../layouts/sidebar_client.php'; ?>
+
 <div class="main-content">
   <?php include_once '../../layouts/header_client.php'; ?>
+
   <div class="container mt-4 px-4">
-    <h2>Dashboard</h2>
-    
-        <!-- 4 Dummy Cards Row -->
-        <div class="row g-4">
-          <!-- Total Properties Owned -->
-    <div class="col-md-3 col-sm-6">
-      <div class="dashboard-card">
-        <div class="card-title">
-          <i class="bi bi-house-fill card-icon"></i>
-          Properties Owned
+    <h2 class="page-title">Dashboard</h2>
+
+    <!-- SUMMARY CARDS -->
+    <div class="row g-4">
+
+      <!-- Total Properties -->
+      <div class="col-md-3 col-sm-6">
+        <div class="dashboard-card">
+          <div class="card-title">
+            <i class="bi bi-house-fill card-icon"></i>
+            Total Properties
+          </div>
+          <div class="card-value">3</div>
         </div>
-        <div class="card-value">3</div>
       </div>
-    </div>
-    
-    <!-- Certificates Available -->
-    <div class="col-md-3 col-sm-6">
-      <div class="dashboard-card">
-        <div class="card-title">
-          <i class="bi bi-file-earmark-text card-icon"></i>
-          Certificates Available
+
+      <!-- Issued Certificates -->
+      <div class="col-md-3 col-sm-6">
+        <div class="dashboard-card">
+          <div class="card-title">
+            <i class="bi bi-file-earmark-text card-icon"></i>
+            Issued Certificates
+          </div>
+          <div class="card-value">5</div>
         </div>
-        <div class="card-value">5</div>
       </div>
-    </div>
-    
-    <!-- Uploaded Documents -->
-    <div class="col-md-3 col-sm-6">
-      <div class="dashboard-card">
-        <div class="card-title">
-          <i class="bi bi-folder-fill card-icon"></i>
-          Uploaded Documents
+
+      <!-- Available Documents -->
+      <div class="col-md-3 col-sm-6">
+        <div class="dashboard-card">
+          <div class="card-title">
+            <i class="bi bi-folder-fill card-icon"></i>
+            Available Documents
+          </div>
+          <div class="card-value">8</div>
         </div>
-        <div class="card-value">8</div>
       </div>
-    </div>
-    
-    <!-- Latest Update -->
-    <div class="col-md-3 col-sm-6">
-      <div class="dashboard-card">
-        <div class="card-title">
-          <i class="bi bi-clock-history card-icon"></i>
-          Last Property Update
+
+      <!-- Last Record Update -->
+      <div class="col-md-3 col-sm-6">
+        <div class="dashboard-card">
+          <div class="card-title">
+            <i class="bi bi-clock-history card-icon"></i>
+            Last Record Update
+          </div>
+          <div class="card-value">March 2026</div>
         </div>
-        <div class="card-value">Mar 2026</div>
       </div>
+
     </div>
 
-    <!-- Recent Activities Section -->
+    <!-- RECENT ACTIVITIES -->
     <div class="recent-activities mt-4">
       <div class="dashboard-card p-3">
         <h3 class="section-header">Recent Activities</h3>
         <hr class="mb-3">
+
         <div class="table-responsive">
           <table class="table table-striped mb-0">
             <thead>
@@ -94,22 +99,23 @@ $currentYear = date('Y');
             <tbody>
               <tr>
                 <td>Mar 15, 2026</td>
-                <td>Viewed Property Assessment</td>
+                <td>Viewed Property Record</td>
                 <td>Lot 88PT</td>
               </tr>
               <tr>
                 <td>Mar 12, 2026</td>
-                <td>Downloaded Tax Declaration</td>
+                <td>Viewed Tax Declaration</td>
                 <td>Lot 5272</td>
               </tr>
               <tr>
                 <td>Mar 10, 2026</td>
-                <td>Viewed Ownership Certificate</td>
+                <td>Viewed Certificate</td>
                 <td>Lot 530</td>
               </tr>
             </tbody>
           </table>
         </div>
+
       </div>
     </div>
 
