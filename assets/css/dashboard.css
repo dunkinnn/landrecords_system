@@ -116,9 +116,23 @@ h2 {
   color: #333;
 }
 
+.card-value-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+}
+
 .trend-badge {
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.card-subtext {
+  font-size: 12px;
+  color: #888;
+  margin-top: 4px;
 }
 
 .trend-badge i {
@@ -146,3 +160,4 @@ h2 {
 body {
   overflow-x: hidden;
 }
+

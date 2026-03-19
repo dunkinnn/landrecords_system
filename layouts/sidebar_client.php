@@ -32,7 +32,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
     <a href="form_generation_client.php" class="nav-link d-flex align-items-center <?= $current_page === 'form_generation_client.php' ? 'active' : '' ?>">
         <img src="../../assets/img/icons/google-forms.png" class="sidebar-icon me-3">
-        <span>Form Generation</span>
+        <span>Certificates / Forms</span>
     </a>
 
   </nav>

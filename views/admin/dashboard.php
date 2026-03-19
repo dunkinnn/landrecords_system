@@ -32,7 +32,13 @@ $currentYear = date('Y');
   <?php include_once '../../layouts/header.php'; ?>
 
   <div class="container mt-4 px-4">
-    <h2>Dashboard</h2>
+    <!-- HEADER -->
+    <div class="mb-4">
+      <h2>Dashboard</h2>
+      <p class="text-muted">
+        Land Records Management Overview - <?php echo $currentMonthName . " " . $currentYear; ?>
+      </p>
+    </div>
 
       <!-- 4 Cards Row -->
       <div class="row g-4">
@@ -41,7 +47,7 @@ $currentYear = date('Y');
           <div class="dashboard-card">
             <div class="card-title">
               <i class="bi bi-people-fill card-icon"></i>
-              Total Land Owners
+              Land Owners
             </div>
             <div class="d-flex align-items-center mt-2">
               <div class="card-value">2.3K</div>
@@ -57,7 +63,7 @@ $currentYear = date('Y');
           <div class="dashboard-card">
             <div class="card-title">
               <i class="bi bi-house-fill card-icon"></i>
-              Total Registered Lands
+            Registered Lands
             </div>
             <div class="d-flex align-items-center mt-2">
               <div class="card-value">450</div>
@@ -72,8 +78,8 @@ $currentYear = date('Y');
         <div class="col-md-3 col-sm-6">
           <div class="dashboard-card">
             <div class="card-title">
-              <i class="bi bi-currency-dollar card-icon"></i>
-              Transactions Today
+              <i class="bi bi-clock-history card-icon"></i>
+              System Activities
             </div>
             <div class="d-flex align-items-center mt-2">
               <div class="card-value">35</div>
@@ -88,8 +94,8 @@ $currentYear = date('Y');
         <div class="col-md-3 col-sm-6">
           <div class="dashboard-card">
             <div class="card-title">
-              <i class="bi bi-receipt-cutoff card-icon"></i>
-              Total Tax Collected
+            <i class="bi bi-cash-coin card-icon"></i>
+            Total Assessed Value
             </div>
             <div class="d-flex align-items-center mt-2">
               <div class="card-value">₱12,500</div>
@@ -101,62 +107,63 @@ $currentYear = date('Y');
         </div>
       </div>
 
-      <!-- Recent Activities Section -->
-      <div class="recent-activities mt-4">
-        <div class="dashboard-card p-3">
-          <h3 class="section-header">Recent Activities</h3>
-          <hr class="mb-3">
-          <div class="table-responsive">
-            <table class="table table-striped mb-0">
-              <thead>
-                <tr>
-                  <th scope="col">Date</th>
-                  <th scope="col">Activity</th>
-                  <th scope="col">User</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>Feb 27, 2026</td>
-                  <td>Added new land record</td>
-                  <td>Juan Dela Cruz</td>
-                </tr>
-                <tr>
-                  <td>Feb 26, 2026</td>
-                  <td>Updated tax assessment</td>
-                  <td>Maria Santos</td>
-                </tr>
-                <tr>
-                  <td>Feb 26, 2026</td>
-                  <td>Deleted old record</td>
-                  <td>Carlos Reyes</td>
-                </tr>
-                <tr>
-                  <td>Feb 26, 2026</td>
-                  <td>Deleted old record</td>
-                  <td>Carlos Reyes</td>
-                </tr>
-                <tr>
-                  <td>Feb 26, 2026</td>
-                  <td>Deleted old record</td>
-                  <td>Carlos Reyes</td>
-                </tr>
-                <tr>
-                  <td>Feb 26, 2026</td>
-                  <td>Deleted old record</td>
-                  <td>Carlos Reyes</td>
-                </tr>
-                <tr>
-                  <td>Feb 26, 2026</td>
-                  <td>Deleted old record</td>
-                  <td>Carlos Reyes</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+    <!-- AUDIT TRAIL -->
+    <div class="recent-activities mt-4">
+      <div class="dashboard-card p-3">
+
+        <h3 class="section-header">Recent Activities</h3>
+        <p class="text-muted mb-2">System logs for transparency and monitoring</p>
+
+        <hr class="mb-3">
+
+        <div class="table-responsive">
+          <table class="table table-striped mb-0">
+            <thead>
+              <tr>
+                <th>Date & Time</th>
+                <th>Action</th>
+                <th>Module</th>
+                <th>User</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr>
+                <td>2026-03-19 09:15 AM</td>
+                <td>Added new land record</td>
+                <td>Land Management</td>
+                <td>Admin</td>
+              </tr>
+
+              <tr>
+                <td>2026-03-19 10:02 AM</td>
+                <td>Updated property details</td>
+                <td>Land Management</td>
+                <td>Admin</td>
+              </tr>
+
+              <tr>
+                <td>2026-03-19 10:30 AM</td>
+                <td>Generated appraisal form</td>
+                <td>Form Generation</td>
+                <td>Admin</td>
+              </tr>
+
+              <tr>
+                <td>2026-03-19 11:00 AM</td>
+                <td>Viewed land record</td>
+                <td>Client Access</td>
+                <td>Owner</td>
+              </tr>
+            </tbody>
+
+          </table>
         </div>
+
       </div>
     </div>
+
+  </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

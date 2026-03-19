@@ -101,10 +101,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <button type="submit" class="auth-btn" id="loginBtn">Login</button>
         </form>
 
-        <div class="login-link">
-            Don't have an account? <a href="signup.php">Sign Up</a>
-        </div>
-
     </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

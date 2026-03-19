@@ -38,42 +38,45 @@ $unreadCount = 3; // change this with DB query later
         <span class="notification-badge"><?= $unreadCount ?></span>
       <?php endif; ?>
 
-      <!-- Notifications Dropdown -->
-      <div id="notificationMenu" class="notification-dropdown">
-
-        <div class="notification-header">
-          <strong>Notifications</strong>
-        </div>
-
-        <div class="notification-item">
-          <i class="fas fa-file-alt notif-icon"></i>
-          <div>
-            <div class="notif-text">Land Appraisal Sheet available</div>
-            <small>2 minutes ago</small>
+        <!-- Notifications Dropdown -->
+        <div id="notificationMenu" class="notification-dropdown">
+              
+          <div class="notification-header">
+            <strong>Notifications</strong>
           </div>
-        </div>
-
-        <div class="notification-item">
-          <i class="fas fa-home notif-icon"></i>
-          <div>
-            <div class="notif-text">Property record updated</div>
-            <small>1 hour ago</small>
+              
+          <!-- Notification 1 -->
+          <div class="notification-item">
+            <i class="fas fa-file-alt notif-icon"></i>
+            <div>
+              <div class="notif-text">Land appraisal record has been generated</div>
+              <small>Today</small>
+            </div>
           </div>
-        </div>
-
-        <div class="notification-item">
-          <i class="fas fa-check-circle notif-icon"></i>
-          <div>
-            <div class="notif-text">Document verified</div>
-            <small>Yesterday</small>
+              
+          <!-- Notification 2 -->
+          <div class="notification-item">
+            <i class="fas fa-home notif-icon"></i>
+            <div>
+              <div class="notif-text">Your property information has been updated by the administrator</div>
+              <small>1 day ago</small>
+            </div>
           </div>
+              
+          <!-- Notification 3 -->
+          <div class="notification-item">
+            <i class="fas fa-file-signature notif-icon"></i>
+            <div>
+              <div class="notif-text">Official certificate is now available for viewing</div>
+              <small>2 days ago</small>
+            </div>
+          </div>
+              
+          <div class="notification-footer">
+            <a href="../client/notifications.php">View All Notifications</a>
+          </div>
+              
         </div>
-
-        <div class="notification-footer">
-          <a href="../client/notifications.php">View All Notifications</a>
-        </div>
-
-      </div>
 
     </div>
 

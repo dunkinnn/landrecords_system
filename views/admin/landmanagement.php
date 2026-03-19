@@ -42,7 +42,6 @@ $currentYear = date('Y');
 			<!-- FILTER, SEARCH & ADD -->
 			<div class="land-controls">
 
-				<!-- Filters -->
 				<div class="filter-group">
 
 					<select class="form-select filter-input">
@@ -61,7 +60,6 @@ $currentYear = date('Y');
 
 				</div>
 
-				<!-- Search + Add -->
 				<div class="search-group">
 
 					<div class="input-group search-box">
@@ -70,13 +68,14 @@ $currentYear = date('Y');
 						</span>
 						<input type="text"
 							   class="form-control search-input"
-							   placeholder="Search lot number or owner...">
+							   placeholder="Search property ID, owner or lot number...">
 					</div>
 
 					<button class="btn btn-success add-btn">
 						<i class="bi bi-plus-lg"></i> Add Land
 					</button>
 				</div>
+
 			</div>
 
 			<!-- TABLE -->
@@ -85,29 +84,28 @@ $currentYear = date('Y');
 				<table class="table table-striped land-table">
 
 					<thead>
-
 						<tr>
 							<th>Property ID</th>
-							<th>Lot Number</th>
+							<th>Owner ID</th>
 							<th>Owner Name</th>
+							<th>Lot Number</th>
 							<th>Barangay</th>
 							<th>Land Type</th>
 							<th>Area (sqm)</th>
-							<th>Tax Dec. No</th>
+							<th>Tax Dec No</th>
 							<th>Assessed Value</th>
 							<th>Status</th>
 							<th>Actions</th>
 						</tr>
-
 					</thead>
 
 					<tbody>
 
 						<tr>
-
 							<td>PR-001</td>
-							<td>LOT-1023</td>
+							<td>LO-2026-0001</td>
 							<td>Juan Dela Cruz</td>
+							<td>LOT-1023</td>
 							<td>Poblacion</td>
 							<td>Agricultural</td>
 							<td>1200</td>
@@ -134,37 +132,33 @@ $currentYear = date('Y');
 
 										<li>
 											<a class="dropdown-item" href="#">
-												<i class="bi bi-eye me-2"></i> View Property
+												<i class="bi bi-eye me-2"></i> View Details
 											</a>
 										</li>
 
 										<li>
 											<a class="dropdown-item" href="#">
-												<i class="bi bi-pencil me-2"></i> Edit Property
+												<i class="bi bi-pencil me-2"></i> Edit Land
 											</a>
 										</li>
 
 										<li>
 											<a class="dropdown-item" href="#">
-												<i class="bi bi-map me-2"></i> View Map
+												<i class="bi bi-file-earmark me-2"></i> Documents & Images
 											</a>
 										</li>
 
 										<li>
 											<a class="dropdown-item" href="#">
-												<i class="bi bi-folder me-2"></i> Documents
+												<i class="bi bi-file-text me-2"></i> Generate Forms
 											</a>
 										</li>
 
 										<li>
-											<a class="dropdown-item" href="#">
-												<i class="bi bi-clock-history me-2"></i> History
-											</a>
-										</li>
-
-										<li>
-											<a class="dropdown-item text-danger" href="#">
-												<i class="bi bi-archive me-2"></i> Archive
+											<a class="dropdown-item text-danger"
+											   data-bs-toggle="modal"
+											   data-bs-target="#deleteModal">
+												<i class="bi bi-trash me-2"></i> Delete (Secure)
 											</a>
 										</li>
 
@@ -173,7 +167,6 @@ $currentYear = date('Y');
 								</div>
 
 							</td>
-
 						</tr>
 
 					</tbody>
@@ -186,6 +179,37 @@ $currentYear = date('Y');
 
 	</div>
 
+</div>
+
+<!-- DELETE CONFIRMATION MODAL (PASSWORD REQUIRED) -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">Secure Deletion</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+
+        <p>Enter your admin password to confirm deletion.</p>
+
+        <input type="password" class="form-control" placeholder="Enter password">
+
+        <small class="text-muted">
+          This action is logged in Audit Trail.
+        </small>
+
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button class="btn btn-danger">Confirm Delete</button>
+      </div>
+
+    </div>
+  </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
