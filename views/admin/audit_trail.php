@@ -42,14 +42,6 @@ $currentYear = date('Y');
               <option>March</option>
             </select>
           </div>
-          <div class="search-group">
-            <div class="input-group search-box">
-              <span class="input-group-text">
-                <i class="bi bi-search"></i>
-              </span>
-              <input type="text" class="form-control search-input" placeholder="Search audit...">
-            </div>
-          </div>
         </div>
 
         <!-- TABLE -->

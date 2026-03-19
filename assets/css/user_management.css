@@ -25,9 +25,8 @@ h2{
   margin-bottom:10px;
 }
 
-/* SEARCH */
-.search-box{
-  min-width:200px;
+.search-box {
+  width: 300px;
 }
 
 .search-box .input-group-text{
@@ -81,6 +80,22 @@ h2{
   display:flex;
   align-items:center;
   gap:10px;
+}
+
+.add-btn {
+  background: #52B028;
+  border: none;
+  font-weight: 500;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.add-btn:hover {
+  background: #469c22;
+  color: #fff;
 }
 
 /* RESPONSIVE */

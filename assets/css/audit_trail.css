@@ -25,21 +25,6 @@ h2 {
   margin-bottom: 10px;
 }
 
-/* SEARCH */
-.search-box{
-  min-width: 200px;
-}
-
-.search-box .input-group-text{
-  background: #fff;
-  border-right: none;
-}
-
-.search-box .form-control{
-  border-left: none;
-  height: 38px;
-}
-
 /* TABLE */
 .form-table{
   width: 100%;
