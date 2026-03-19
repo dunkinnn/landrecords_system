@@ -61,33 +61,39 @@ $currentYear = date('Y');
                 <th>Action</th>
                 <th>Date & Time</th>
               </tr>
-            </thead>
+          </thead>
             <tbody>
+
               <tr>
                 <td>Admin</td>
                 <td>Generated Tax Declaration Form</td>
                 <td>March 10, 2026 09:15 AM</td>
               </tr>
+
               <tr>
-                <td>Staff</td>
+                <td>Client</td>
                 <td>Viewed Property Assessment Form</td>
                 <td>March 11, 2026 01:20 PM</td>
               </tr>
+
               <tr>
                 <td>Admin</td>
                 <td>Deleted Old Document</td>
                 <td>March 12, 2026 03:45 PM</td>
               </tr>
+
               <tr>
-                <td>Staff</td>
+                <td>Client</td>
                 <td>Edited Land Ownership Certificate</td>
                 <td>March 13, 2026 10:30 AM</td>
               </tr>
+
               <tr>
                 <td>Admin</td>
                 <td>Generated Assessment Report</td>
                 <td>March 14, 2026 11:10 AM</td>
               </tr>
+
             </tbody>
           </table>
         </div>
