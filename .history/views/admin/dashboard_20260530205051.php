@@ -7,6 +7,7 @@ date_default_timezone_set('Asia/Manila');
 
 $totalLandOwners = 0;
 $transactionsToday = 0;
+$recentActivities = [];
 $monthLabels = [];
 $emptyMonthlyData = [];
 
@@ -25,6 +26,17 @@ if ($transactionsResult) {
   $transactionsToday = (int) $transactionsResult->fetch_assoc()['total'];
 }
 
+$activitiesResult = $conn->query(
+  "SELECT username, action, created_at
+   FROM tbl_audit_trial
+   ORDER BY created_at DESC
+   LIMIT 10"
+);
+if ($activitiesResult) {
+  while ($row = $activitiesResult->fetch_assoc()) {
+    $recentActivities[] = $row;
+  }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -134,13 +146,46 @@ if ($transactionsResult) {
       </div>
 
       <!-- Land Registration Trend -->
-      <div class="dashboard-card chart-card mt-4 mb-4">
+      <div class="dashboard-card chart-card mt-4">
         <h3 class="section-header">Land Registration Trend</h3>
         <div class="chart-wrap">
           <canvas id="landRegistrationChart"></canvas>
         </div>
       </div>
 
+      <!-- Recent Activities Section -->
+      <div class="recent-activities mt-4">
+        <div class="dashboard-card p-3">
+          <h3 class="section-header">Recent Activities</h3>
+          <hr class="mb-3">
+          <div class="table-responsive">
+            <table class="table table-striped mb-0">
+              <thead>
+                <tr>
+                  <th scope="col">Date</th>
+                  <th scope="col">Activity</th>
+                  <th scope="col">User</th>
+                </tr>
+              </thead>
+              <tbody>
+                <?php if (!empty($recentActivities)): ?>
+                  <?php foreach ($recentActivities as $activity): ?>
+                    <tr>
+                      <td><?php echo htmlspecialchars(date('M d, Y', strtotime($activity['created_at']))); ?></td>
+                      <td><?php echo htmlspecialchars($activity['action']); ?></td>
+                      <td><?php echo htmlspecialchars(ucfirst($activity['username'] ?? 'System')); ?></td>
+                    </tr>
+                  <?php endforeach; ?>
+                <?php else: ?>
+                  <tr>
+                    <td colspan="3" class="text-center text-muted py-2">No recent activities found.</td>
+                  </tr>
+                <?php endif; ?>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
     </div>
 </div>
 

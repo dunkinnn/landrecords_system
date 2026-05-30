@@ -134,7 +134,7 @@ if ($transactionsResult) {
       </div>
 
       <!-- Land Registration Trend -->
-      <div class="dashboard-card chart-card mt-4 mb-4">
+      <div class="dashboard-card chart-card mt-4">
         <h3 class="section-header">Land Registration Trend</h3>
         <div class="chart-wrap">
           <canvas id="landRegistrationChart"></canvas>
