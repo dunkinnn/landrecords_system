@@ -57,7 +57,7 @@ $unreadCount = 3; // change this with DB query later
           <i class="fas fa-home notif-icon"></i>
           <div>
             <div class="notif-text">Property record updated</div>
-            <small>1 hour</small>
+            <small>1 hour ago</small>
           </div>
         </div>
 
