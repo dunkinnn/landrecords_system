@@ -1,0 +1,148 @@
+* {
+    box-sizing: border-box;
+}
+
+/* Body Layout */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Blurred Background */
+body::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: 
+        linear-gradient(rgba(0,0,0,0.40), rgba(0,0,0,0.40)),
+        url('../img/bg.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    filter: blur(5px);
+    transform: scale(1.1);
+    z-index: -1;
+}
+
+/* Main Container */
+.auth-container {
+    background: #ffffff;
+    width: 450px;
+    padding: 40px;
+    border-radius: 26px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    text-align: center;
+}
+
+/* Logo */
+.logo {
+    width: 100px;
+    margin-bottom: 15px;
+}
+
+/* Title */
+.auth-container h1 {
+    margin: 0;
+    font-size: 36px;
+    color: #52B028;
+}
+
+.tagline {
+    font-size: 14px;
+    color: #52B028;
+    margin: 10px 0 25px 0;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+/* Inputs */
+input {
+    width: 100%;
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    outline: none;
+    transition: 0.3s ease;
+}
+
+input:focus {
+    border-color: #52B028;
+    box-shadow: 0 0 5px rgba(82, 176, 40, 0.4);
+}
+
+/* Button */
+.auth-btn {
+    width: 100%;
+    padding: 12px;
+    background-color: #52B028;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 15px;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+.auth-btn:hover {
+    background-color: #64ca35;
+}
+
+/* Options (remember + forgot) */
+.options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    font-size: 14px;
+    width: 100%;
+}
+
+.remember {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+}
+
+.remember input {
+    width: auto;
+    margin: 0;
+}
+
+.forgot {
+    text-decoration: underline;
+    color: #007bff;
+}
+
+/* Login Link */
+.login-link {
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+.login-link a {
+    color: #598ff3;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.login-link a:hover {
+    text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .auth-container {
+        width: 90%;
+        padding: 25px;
+    }
+}

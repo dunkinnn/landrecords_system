@@ -1,0 +1,161 @@
+/* === PAGE TITLE === */
+h2 {
+  color: #52B028;
+  margin-bottom: 1rem;
+  font-size: clamp(1.5rem, 2vw, 2.5rem);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* === MAIN CONTAINER === */
+.land-container {
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  width: 100%;
+  overflow: visible;
+}
+
+/* === CONTROLS (FILTER + SEARCH + ADD) === */
+.land-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  width: 100%;
+}
+
+/* === FILTER GROUP === */
+.filter-group {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.filter-input {
+  width: 180px;
+  max-width: 100%;
+  height: 38px;
+}
+
+/* === SEARCH GROUP === */
+.search-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: nowrap;   /* prevent wrapping */
+}
+
+.search-box {
+  flex: 1;             /* search box takes remaining space */
+  min-width: 180px;
+}
+
+.search-box .input-group-text {
+  background: #ffffff;
+  border-right: none;
+}
+
+.search-box .bi-search {
+  font-size: 14px;
+  color: #6c757d;
+}
+
+.search-box .form-control {
+  border-left: none;
+  height: 38px;
+}
+
+.search-box .form-control:focus {
+  box-shadow: none;
+  border-color: #ced4da;
+}
+
+/* === ADD BUTTON === */
+.add-btn {
+  background-color: #52B028;
+  border: none;
+  font-weight: 500;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+.add-btn:hover {
+  background-color: #469c22;
+}
+
+/* === TABLE === */
+.land-table {
+  margin-bottom: 0;
+  width: 100%;
+}
+
+.land-table thead {
+  background-color: #f8f9fa;
+}
+
+.land-table thead th {
+  font-weight: 600;
+  font-size: 14px;
+  border-bottom: 2px solid #dee2e6;
+  white-space: nowrap;
+}
+
+.land-table td {
+  font-size: 14px;
+  vertical-align: middle;
+}
+
+.land-table tbody tr:hover {
+  background-color: #f5f9f3;
+}
+
+/* === ACTIONS COLUMN FIX === */
+.land-table td.text-center {
+  vertical-align: middle; /* make sure content is centered vertically */
+}
+
+.land-table .dropdown .btn {
+  padding: 0;               /* remove extra button padding */
+  line-height: 1;           /* align icon correctly */
+  height: auto;             /* let button shrink to icon height */
+  display: flex;            /* flex to center icon */
+  align-items: center;      /* vertical center */
+  justify-content: center;  /* horizontal center (already text-center) */
+}
+/* === DROPDOWN FIX FOR TABLE === */
+.table-responsive {
+  overflow-x: auto;
+  overflow-y: visible;
+}
+
+/* === PREVENT PAGE HORIZONTAL SCROLL === */
+body {
+  overflow-x: hidden;
+}
+
+/* === RESPONSIVE IMPROVEMENTS === */
+@media (max-width: 768px) {
+  .land-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filter-group {
+    width: 100%;
+  }
+
+  .search-group {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-box, .add-btn {
+    width: 100%;
+  }
+}

@@ -1,0 +1,156 @@
+/* PAGE TITLE */
+h2{
+  color:#52B028;
+  margin-bottom:1rem;
+  font-size:clamp(1.5rem,2vw,2.5rem);
+  text-shadow:2px 2px 4px rgba(0,0,0,0.1);
+}
+
+/* CONTAINER */
+.form-container{
+  background:#fff;
+  padding:20px;
+  border-radius:10px;
+  box-shadow:0 2px 10px rgba(0,0,0,0.05);
+  width:100%;
+}
+
+/* CONTROLS */
+.form-controls{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:12px;
+  margin-bottom:10px;
+}
+
+/* SEARCH */
+.search-box{
+  max-width:340px;
+  min-width:260px;
+  width:100%;
+}
+
+.search-box .input-group-text{
+  background:#fff;
+  border-right:none;
+}
+
+.search-box .form-control{
+  border-left:none;
+  height:38px;
+}
+
+/* TABLE */
+.form-table{
+  width:100%;
+}
+
+.form-table thead{
+  background:#f8f9fa;
+}
+
+.form-table thead th{
+  font-weight:600;
+  font-size:14px;
+  border-bottom:2px solid #dee2e6;
+}
+
+.form-table td{
+  font-size:14px;
+  vertical-align:middle;
+}
+
+.form-table tbody tr:hover{
+  background:#f5f9f3;
+}
+
+.table-footer {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  padding-top: 6px;
+}
+
+.entries-info {
+  font-size: 14px;
+}
+
+.pagination .page-link {
+  color: #52B028;
+}
+
+.pagination .active .page-link {
+  background: #52B028;
+  border-color: #52B028;
+  color: #fff;
+}
+
+/* RESPONSIVE */
+.table-responsive{
+  overflow-x:auto;
+}
+
+body{
+  overflow-x:hidden;
+}
+.add-user-btn {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.success-check-icon {
+  align-items: center;
+  color: #52B028;
+  display: flex;
+  font-size: 7rem;
+  height: 128px;
+  justify-content: center;
+  line-height: 1;
+  width: 128px;
+}
+
+.success-check-icon i {
+  display: block;
+  line-height: 1;
+}
+
+.save-user-btn {
+  min-width: 110px;
+}
+
+.add-user-dialog {
+  max-width: 560px;
+}
+
+.add-user-dialog .modal-header,
+.add-user-dialog .modal-body,
+.add-user-dialog .modal-footer {
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+
+@media (max-width: 576px) {
+  .search-box {
+    max-width:none;
+    min-width: 0;
+  }
+
+  .add-user-btn {
+    flex-shrink: 0;
+  }
+
+  .table-footer {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .add-user-dialog .modal-header,
+  .add-user-dialog .modal-body,
+  .add-user-dialog .modal-footer {
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+  }
+}
