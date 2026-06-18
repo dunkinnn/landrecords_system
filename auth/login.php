@@ -20,12 +20,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($stmt->num_rows == 1) {
             $stmt->fetch();
 
-            if (!in_array($role, ["client", "admin"])) {
+            if (!in_array($role, ["client", "admin", "staff"])) {
                 $message = "<div class='alert alert-danger text-center'>Access denied.</div>";
             } else {
                 $login_success = false;
 
-                if ($role === "client") {
+                if ($role === "client" || $role === "staff") {
                     $login_success = password_verify($password, $db_password);
                 } else if ($role === "admin") {
                     $login_success = ($password === $db_password);
@@ -43,6 +43,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     // Redirect
                     if ($role === "client") {
                         header("Location: ../views/client/home.php");
+                    } else if ($role === "staff") {
+                        header("Location: ../views/staff/dashboard.php");
                     } else if ($role === "admin") {
                         header("Location: ../views/admin/dashboard.php");
                     }

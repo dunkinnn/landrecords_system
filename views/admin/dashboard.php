@@ -6,6 +6,7 @@ require_once '../../includes/db.php';
 date_default_timezone_set('Asia/Manila');
 
 $totalLandOwners = 0;
+$totalRegisteredLands = 0;
 $transactionsToday = 0;
 $monthLabels = [];
 $emptyMonthlyData = [];
@@ -18,6 +19,11 @@ for ($month = 1; $month <= 12; $month++) {
 $ownersResult = $conn->query("SELECT COUNT(*) AS total FROM tbl_users WHERE role = 'client'");
 if ($ownersResult) {
   $totalLandOwners = (int) $ownersResult->fetch_assoc()['total'];
+}
+
+$landsResult = $conn->query("SELECT COUNT(*) AS total FROM tbl_properties");
+if ($landsResult) {
+  $totalRegisteredLands = (int) $landsResult->fetch_assoc()['total'];
 }
 
 $transactionsResult = $conn->query("SELECT COUNT(*) AS total FROM tbl_audit_trial WHERE DATE(created_at) = CURDATE()");
@@ -73,7 +79,7 @@ if ($transactionsResult) {
               Total Registered Lands
             </div>
             <div class="d-flex align-items-center mt-2">
-              <div class="card-value">0</div>
+              <div class="card-value"><?php echo number_format($totalRegisteredLands); ?></div>
             </div>
           </div>
         </div>

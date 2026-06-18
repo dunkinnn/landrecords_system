@@ -7,38 +7,6 @@ date_default_timezone_set('Asia/Manila');
 
 $currentMonthName = date('F');
 $currentYear = date('Y');
-$selectedBarangay = trim($_GET['barangay'] ?? '');
-$selectedLandType = trim($_GET['land_type'] ?? '');
-$searchTerm = trim($_GET['search'] ?? '');
-$searchLike = '%' . $searchTerm . '%';
-
-/* =========================
-   DELETE LAND
-========================= */
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_land'])) {
-    $property_id = intval($_POST['property_id']);
-    $admin_password = $_POST['admin_password'];
-    $user_id = $_SESSION['user_id'];
-
-    $stmt = $conn->prepare("SELECT password FROM tbl_users WHERE user_id = ? AND role = 'admin'");
-    $stmt->bind_param("i", $user_id);
-    $stmt->execute();
-    $stmt->bind_result($db_password);
-    if ($stmt->fetch() && $admin_password === $db_password) {
-        $stmt->close();
-        $delete_sql = "UPDATE tbl_properties SET is_deleted = 1, deleted_by = ?, deleted_at = NOW() WHERE property_id = ?";
-        $del_stmt = $conn->prepare($delete_sql);
-        $del_stmt->bind_param("ii", $user_id, $property_id);
-        $del_stmt->execute();
-        $del_stmt->close();
-        $_SESSION['success_modal'] = 'land_deleted';
-    } else {
-        $stmt->close();
-        $_SESSION['error'] = "Incorrect admin password.";
-    }
-    header("Location: landmanagement.php");
-    exit;
-}
 
 /* =========================
    SAVE LAND (ADD LAND FORM)
@@ -47,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_land'])) {
 
     $owner_id     = $_POST['owner_id'];
     $lot_number   = $_POST['lot_number'];
-    $tax_dec_no   = ''; // Set to empty string as it's no longer used
+    $tax_dec_no   = $_POST['tax_dec_no'];
     $barangay     = $_POST['barangay'];
     $land_type    = $_POST['land_type'];
     $area_sqm     = floatval($_POST['area_sqm']);
@@ -84,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_land'])) {
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
 	<link rel="stylesheet" href="../../assets/css/layout.css">
-	<link rel="stylesheet" href="../../assets/css/landmanagement.css?v=1.0">
+	<link rel="stylesheet" href="../../assets/css/landmanagement.css">
 
 	<!-- Leaflet CSS for Map -->
 	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -111,22 +79,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_land'])) {
 		<div class="land-container">
 
 			<!-- FILTER + SEARCH + ADD -->
-			<form class="land-controls" id="landFilterForm" method="GET">
+			<div class="land-controls">
 
 				<div class="filter-group">
 
-					<select class="form-select filter-input" name="barangay">
-						<option value="" disabled selected>Filter by Barangay</option>
-						<option value="Poblacion" <?php echo $selectedBarangay === 'Poblacion' ? 'selected' : ''; ?>>Poblacion</option>
-						<option value="San Roque" <?php echo $selectedBarangay === 'San Roque' ? 'selected' : ''; ?>>San Roque</option>
-						<option value="San Jose" <?php echo $selectedBarangay === 'San Jose' ? 'selected' : ''; ?>>San Jose</option>
+					<select class="form-select filter-input">
+						<option value="">Filter by Barangay</option>
+						<option>Poblacion</option>
+						<option>San Roque</option>
+						<option>San Jose</option>
 					</select>
 
-					<select class="form-select filter-input" name="land_type">
-						<option value="" disabled selected>Land Type</option>
-						<option value="Agricultural" <?php echo $selectedLandType === 'Agricultural' ? 'selected' : ''; ?>>Agricultural</option>
-						<option value="Residential" <?php echo $selectedLandType === 'Residential' ? 'selected' : ''; ?>>Residential</option>
-						<option value="Commercial" <?php echo $selectedLandType === 'Commercial' ? 'selected' : ''; ?>>Commercial</option>
+					<select class="form-select filter-input">
+						<option value="">Land Type</option>
+						<option>Agricultural</option>
+						<option>Residential</option>
+						<option>Commercial</option>
 					</select>
 
 				</div>
@@ -137,19 +105,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_land'])) {
 						<span class="input-group-text">
 							<i class="bi bi-search"></i>
 						</span>
-						<input type="text" class="form-control search-input" name="search"
-							   value="<?php echo htmlspecialchars($searchTerm); ?>"
+						<input type="text" class="form-control search-input"
 							   placeholder="Search lot number or owner...">
 					</div>
 
 					<!-- ADD BUTTON -->
-					<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addLandModal">
+					<button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addLandModal">
 						<i class="bi bi-plus-lg"></i> Add Land
 					</button>
 
 				</div>
 
-			</form>
+			</div>
 
 			<!-- TABLE -->
 			<div class="table-responsive mt-3">
@@ -180,30 +147,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_land'])) {
 						        LEFT JOIN tbl_users u ON p.owner_id = u.user_id";
 
 						$result = $conn->query($sql);
-						$sql = "SELECT p.*, u.fullname 
-						        FROM tbl_properties p
-						        LEFT JOIN tbl_users u ON p.owner_id = u.user_id
-						        WHERE p.is_deleted = 0
-						          AND (? = '' OR p.barangay = ?)
-						          AND (? = '' OR p.land_type = ?)
-						          AND (? = '' OR p.lot_number LIKE ? OR u.fullname LIKE ?)
-						        ORDER BY p.property_id DESC";
-
-						$stmt = $conn->prepare($sql);
-						if ($stmt) {
-							$stmt->bind_param(
-								"sssssss",
-								$selectedBarangay,
-								$selectedBarangay,
-								$selectedLandType,
-								$selectedLandType,
-								$searchTerm,
-								$searchLike,
-								$searchLike
-							);
-							$stmt->execute();
-							$result = $stmt->get_result();
-						}
 
 						if ($result->num_rows > 0) {
 							while ($row = $result->fetch_assoc()) {
@@ -251,12 +194,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_land'])) {
 														<i class='bi bi-pencil-square me-2'></i> Edit
 													</button>
 												</li>
-												<li><hr class='dropdown-divider'></li>
-												<li>
-													<button class='dropdown-item text-danger' data-bs-toggle='modal' data-bs-target='#deleteLandModal' onclick='document.getElementById(\"delete_property_id\").value=\"" . $row['property_id'] . "\";'>
-														<i class='bi bi-trash me-2'></i> Delete
-													</button>
-												</li>
 											</ul>
 										</div>
 									</td>
@@ -268,10 +205,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_land'])) {
 									No land records found.
 								</td>
 							</tr>";
-						}
-
-						if (isset($stmt) && $stmt) {
-							$stmt->close();
 						}
 						?>
 
@@ -417,59 +350,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_land'])) {
 	</div>
 </div>
 
-<!-- DELETE LAND MODAL -->
-<div class="modal fade" id="deleteLandModal" tabindex="-1">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<form method="POST">
-				<div class="modal-header">
-					<h5 class="modal-title text-danger">Confirm Deletion</h5>
-					<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-				</div>
-				<div class="modal-body">
-					<input type="hidden" name="delete_land" value="1">
-					<input type="hidden" name="property_id" id="delete_property_id">
-					<p>Are you sure you want to delete this land record? It will be moved to Recently Deleted.</p>
-					<div class="mb-3">
-						<label class="form-label">Enter Admin Password to Confirm</label>
-						<input type="password" name="admin_password" class="form-control" required>
-					</div>
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-					<button type="submit" class="btn btn-danger">Delete</button>
-				</div>
-			</form>
-		</div>
-	</div>
-</div>
-
-<!-- SUCCESS MODAL -->
-<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header border-0 pb-0">
-                <h5 class="modal-title visually-hidden" id="successModalLabel">
-                    Land Deleted
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-
-            <div class="modal-body text-center px-4 pb-4">
-                <div class="success-check-icon mx-auto mb-3">
-                    <i class="bi bi-check-circle-fill"></i>
-                </div>
-
-                <h5 class="mb-2">Land record deleted successfully</h5>
-                <p class="text-muted mb-0">
-                    The land information has been moved to Recently Deleted.
-                </p>
-            </div>
-        </div>
-    </div>
-</div>
-
-
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css"/>
 <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
@@ -496,27 +376,9 @@ function viewMap(geojsonStr) {
 }
 
 document.addEventListener("DOMContentLoaded", function() {
-	const landFilterForm = document.getElementById("landFilterForm");
-	const filterInputs = landFilterForm.querySelectorAll("select");
-	const searchInput = landFilterForm.querySelector(".search-input");
-	let searchTimer;
-
-	filterInputs.forEach(function (input) {
-		input.addEventListener("change", function () {
-			landFilterForm.submit();
-		});
-	});
-
-	searchInput.addEventListener("input", function () {
-		clearTimeout(searchTimer);
-		searchTimer = setTimeout(function () {
-			landFilterForm.submit();
-		}, 500);
-	});
-
-    const areaInput = document.querySelector('#addLandModal input[name="area_sqm"]');
-    const unitInput = document.querySelector('#addLandModal input[name="unit_value"]');
-    const landTypeSelect = document.querySelector('#addLandModal select[name="land_type"]');
+    const areaInput = document.querySelector('input[name="area_sqm"]');
+    const unitInput = document.querySelector('input[name="unit_value"]');
+    const landTypeSelect = document.querySelector('select[name="land_type"]');
     
     document.querySelectorAll('.view-map-btn').forEach(btn => {
         btn.addEventListener('click', function() {
@@ -647,17 +509,5 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 </script>
 
-<?php if (isset($_SESSION['success_modal']) && $_SESSION['success_modal'] === 'land_deleted'): ?>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    var successModal = new bootstrap.Modal(document.getElementById('successModal'));
-    successModal.show();
-
-    setTimeout(function () {
-        successModal.hide();
-    }, 3000);
-});
-</script>
-<?php unset($_SESSION['success_modal']); endif; ?>
 </body>
 </html>

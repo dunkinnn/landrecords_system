@@ -40,11 +40,6 @@ $current_page = basename($_SERVER['PHP_SELF']);
         <span>Form Generation</span>
     </a>
 
-    <a href="audit_trail.php" class="nav-link d-flex align-items-center <?= $current_page === 'audit_trail.php' ? 'active' : '' ?>">
-      <img src="../../assets/img/icons/history.png" class="sidebar-icon me-3">
-      <span>Audit Trail</span>
-    </a>
-
     <a href="user_management.php" class="nav-link d-flex align-items-center <?= $current_page === 'user_management.php' ? 'active' : '' ?>">
       <img src="../../assets/img/icons/team.png" class="sidebar-icon me-3">
       <span>User Management</span>

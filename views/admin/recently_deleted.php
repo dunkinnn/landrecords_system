@@ -1,8 +1,31 @@
 <?php
 session_start();
 require_once '../../includes/auth.php';
+require_once '../../includes/db.php';
 
 date_default_timezone_set('Asia/Manila');
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['restore_land'])) {
+        $property_id = intval($_POST['property_id']);
+        $sql = "UPDATE tbl_properties SET is_deleted = 0, deleted_by = NULL, deleted_at = NULL WHERE property_id = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $property_id);
+        $stmt->execute();
+        $stmt->close();
+        header("Location: recently_deleted.php");
+        exit;
+    } elseif (isset($_POST['permanent_delete_land'])) {
+        $property_id = intval($_POST['property_id']);
+        $sql = "DELETE FROM tbl_properties WHERE property_id = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $property_id);
+        $stmt->execute();
+        $stmt->close();
+        header("Location: recently_deleted.php");
+        exit;
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -55,9 +78,39 @@ date_default_timezone_set('Asia/Manila');
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td colspan="5" class="text-center text-muted py-2">No recently deleted records found.</td>
-              </tr>
+              <?php
+              $sql = "SELECT p.*, u.fullname AS deleted_by_name 
+                      FROM tbl_properties p
+                      LEFT JOIN tbl_users u ON p.deleted_by = u.user_id
+                      WHERE p.is_deleted = 1
+                      ORDER BY p.deleted_at DESC";
+              $result = $conn->query($sql);
+
+              if ($result && $result->num_rows > 0) {
+                  while ($row = $result->fetch_assoc()) {
+                      $deleted_at = date('M d, Y h:i A', strtotime($row['deleted_at']));
+                      echo "<tr>
+                        <td>Land Record</td>
+                        <td>Lot: " . htmlspecialchars($row['lot_number']) . "</td>
+                        <td>" . htmlspecialchars($row['deleted_by_name'] ?? 'Unknown') . "</td>
+                        <td>" . $deleted_at . "</td>
+                        <td>
+                          <form method='POST' class='d-inline'>
+                            <input type='hidden' name='property_id' value='" . $row['property_id'] . "'>
+                            <button type='submit' name='restore_land' class='btn btn-sm btn-success me-1' title='Restore'>
+                              <i class='bi bi-arrow-counterclockwise'></i> Restore
+                            </button>
+                            <button type='submit' name='permanent_delete_land' class='btn btn-sm btn-danger' title='Permanently Delete' onclick='return confirm(\"Are you sure you want to permanently delete this record? This action cannot be undone.\");'>
+                              <i class='bi bi-trash'></i> Delete
+                            </button>
+                          </form>
+                        </td>
+                      </tr>";
+                  }
+              } else {
+                  echo "<tr><td colspan='5' class='text-center text-muted py-2'>No recently deleted records found.</td></tr>";
+              }
+              ?>
             </tbody>
           </table>
         </div>

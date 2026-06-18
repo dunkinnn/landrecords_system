@@ -159,3 +159,19 @@ body {
     width: 100%;
   }
 }
+
+.success-check-icon {
+  align-items: center;
+  color: #52B028;
+  display: flex;
+  font-size: 7rem;
+  height: 128px;
+  justify-content: center;
+  line-height: 1;
+  width: 128px;
+}
+
+.success-check-icon i {
+  display: block;
+  line-height: 1;
+}
