@@ -28,28 +28,33 @@ $currentYear = date('Y');
       <div class="document-container">
         <!-- CONTROLS -->
         <div class="document-controls">
-          <div class="filter-group">
-            <select class="form-select filter-input">
-              <option value="">Filter by Document Type</option>
-              <option>Tax Declaration</option>
-              <option>Deed of Sale</option>
-              <option>Survey Plan</option>
-              <option>Land Title</option>
-              <option>Property Image</option>
-            </select>
-            <select class="form-select filter-input">
-              <option value="">Filter by Barangay</option>
-              <option>Poblacion</option>
-              <option>San Jose</option>
-              <option>San Roque</option>
-            </select>
+          <div class="controls-left">
+            <div class="filter-group">
+              <select class="form-select filter-input">
+                <option value="">Filter by Document Type</option>
+                <option>Tax Declaration</option>
+                <option>Deed of Sale</option>
+                <option>Survey Plan</option>
+                <option>Land Title</option>
+                <option>Property Image</option>
+              </select>
+              <select class="form-select filter-input">
+                <option value="">Filter by Barangay</option>
+                <option>Poblacion</option>
+                <option>San Jose</option>
+                <option>San Roque</option>
+              </select>
+            </div>
           </div>
-          <div class="search-group">
-            <div class="input-group search-box">
-              <span class="input-group-text">
-                <i class="bi bi-search"></i>
-              </span>
-              <input type="text" class="form-control search-input" placeholder="Search property or owner...">
+
+          <div class="controls-right">
+            <div class="search-group">
+              <div class="input-group search-box">
+                <span class="input-group-text">
+                  <i class="bi bi-search"></i>
+                </span>
+                <input type="text" class="form-control search-input" placeholder="Search property or owner...">
+              </div>
             </div>
           </div>
         </div>

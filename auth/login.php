@@ -11,11 +11,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if (!empty($username) && !empty($password)) {
         // Fetch the user by username
-        $stmt = $conn->prepare("SELECT user_id, fullname, password, role FROM tbl_users WHERE username = ?");
+        $stmt = $conn->prepare("SELECT user_id, fullname, email, password, role FROM tbl_users WHERE username = ?");
         $stmt->bind_param("s", $username);
         $stmt->execute();
         $stmt->store_result();
-        $stmt->bind_result($user_id, $db_fullname, $db_password, $role);
+        $stmt->bind_result($user_id, $db_fullname, $db_email, $db_password, $role);
 
         if ($stmt->num_rows == 1) {
             $stmt->fetch();
@@ -36,6 +36,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $_SESSION['user_id'] = $user_id;
                     $_SESSION['username'] = $username;
                     $_SESSION['fullname'] = $db_fullname; // use database value
+                    $_SESSION['email'] = $db_email;
                     $_SESSION['role'] = $role;
 
                     logAuditTrail($conn, "Logged in", "User logged in successfully.");

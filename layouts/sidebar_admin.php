@@ -30,6 +30,11 @@ $current_page = basename($_SERVER['PHP_SELF']);
       <span>Land Management</span>
     </a>
 
+      <a href="land_v2.php" class="nav-link d-flex align-items-center <?= $current_page === 'land_v2.php' ? 'active' : '' ?>">
+        <img src="../../assets/img/icons/land.png" class="sidebar-icon me-3">
+      <span>Land Management V2</span>
+    </a>
+
     <a href="documents.php" class="nav-link d-flex align-items-center <?= $current_page === 'documents.php' ? 'active' : '' ?>">
       <img src="../../assets/img/icons/paper.png" class="sidebar-icon me-3">
       <span>Documents & Images</span>

@@ -25,27 +25,32 @@ date_default_timezone_set('Asia/Manila');
       <div class="form-container">
         <!-- FILTERS + SEARCH -->
         <div class="form-controls">
-          <div class="filter-group">
-            <select class="form-select filter-input">
-              <option value="">Filter by Form Type</option>
-              <option>Land Sheet</option>
-              <option>Building/Improvements Sheet</option>
-              <option>Machinery Sheet</option>
-              <option>Certification</option>
-            </select>
-            <select class="form-select filter-input">
-              <option value="">Filter by Year</option>
-              <option>2026</option>
-              <option>2025</option>
-              <option>2024</option>
-            </select>
+          <div class="controls-left">
+            <div class="filter-group">
+              <select class="form-select filter-input">
+                <option value="">Filter by Form Type</option>
+                <option>Land Sheet</option>
+                <option>Building/Improvements Sheet</option>
+                <option>Machinery Sheet</option>
+                <option>Certification</option>
+              </select>
+              <select class="form-select filter-input">
+                <option value="">Filter by Year</option>
+                <option>2026</option>
+                <option>2025</option>
+                <option>2024</option>
+              </select>
+            </div>
           </div>
-          <div class="search-group">
-            <div class="input-group search-box">
-              <span class="input-group-text">
-                <i class="bi bi-search"></i>
-              </span>
-              <input type="text" class="form-control search-input" placeholder="Search form...">
+
+          <div class="controls-right">
+            <div class="search-group">
+              <div class="input-group search-box">
+                <span class="input-group-text">
+                  <i class="bi bi-search"></i>
+                </span>
+                <input type="text" class="form-control search-input" placeholder="Search form...">
+              </div>
             </div>
           </div>
         </div>

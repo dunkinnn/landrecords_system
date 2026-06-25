@@ -4,6 +4,11 @@ require_once '../../includes/auth.php';
 
 date_default_timezone_set('Asia/Manila');
 
+$fullname = $_SESSION['fullname'] ?? 'Harlene Soriano';
+$email = $_SESSION['email'] ?? 'harlene@email.com';
+$username = $_SESSION['username'] ?? 'juanclient01';
+$phone = $_SESSION['phone'] ?? '09123456789';
+
 $currentMonthName = date('F');
 $currentYear = date('Y');
 ?>
@@ -40,7 +45,7 @@ $currentYear = date('Y');
 
       <img src="../../assets/img/profile.png" class="profile-avatar">
 
-      <h4 class="mt-3">Harlene Soriano</h4>
+      <h4 class="mt-3"><?= htmlspecialchars($fullname) ?></h4>
       <p class="text-muted">Registered Property Owner</p>
 
       <button class="btn btn-success btn-sm mt-2">
@@ -60,17 +65,17 @@ $currentYear = date('Y');
       <div class="row profile-info">
         <div class="col-md-6">
           <label>Full Name</label>
-          <p>Harlene Soriano</p>
+          <p><?= htmlspecialchars($fullname) ?></p>
         </div>
 
         <div class="col-md-6">
           <label>Email</label>
-          <p>harlene@email.com</p>
+          <p><?= htmlspecialchars($email) ?></p>
         </div>
 
         <div class="col-md-6">
           <label>Contact Number</label>
-          <p>09123456789</p>
+          <p><?= htmlspecialchars($phone) ?></p>
         </div>
 
         <div class="col-md-6">
@@ -99,7 +104,7 @@ $currentYear = date('Y');
 
         <div class="col-md-6">
           <label>Username</label>
-          <p>juanclient01</p>
+          <p><?= htmlspecialchars($username) ?></p>
         </div>
 
         <div class="col-md-6">

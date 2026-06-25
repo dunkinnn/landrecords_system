@@ -19,14 +19,15 @@ $status = 'active';
 $currentPasswordHash = '';
 
 if ($userId) {
-  $stmt = $conn->prepare("SELECT fullname, username, phone, password, role, status FROM tbl_users WHERE user_id = ? LIMIT 1");
+  $stmt = $conn->prepare("SELECT fullname, username, email, phone, password, role, status FROM tbl_users WHERE user_id = ? LIMIT 1");
   $stmt->bind_param("i", $userId);
   $stmt->execute();
-  $stmt->bind_result($dbFullname, $dbUsername, $dbPhone, $dbPassword, $dbRole, $dbStatus);
+  $stmt->bind_result($dbFullname, $dbUsername, $dbEmail, $dbPhone, $dbPassword, $dbRole, $dbStatus);
 
   if ($stmt->fetch()) {
     $fullname = $dbFullname ?: $fullname;
     $username = $dbUsername ?: $username;
+    $email = $dbEmail ?: $email;
     $phone = $dbPhone ?: $phone;
     $currentPasswordHash = $dbPassword ?? '';
     $role = $dbRole ?: $role;
@@ -44,16 +45,16 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["update_profile_detail
 
   if (!$userId) {
     $_SESSION["profile_message"] = "<div class='alert alert-danger'>Unable to identify the current user.</div>";
-  } elseif ($newFullname === "" || $newUsername === "" || $newPhone === "") {
-    $_SESSION["profile_message"] = "<div class='alert alert-warning'>Full name, username, and contact number are required.</div>";
+  } elseif ($newFullname === "" || $newUsername === "" || $newEmail === "" || $newPhone === "") {
+    $_SESSION["profile_message"] = "<div class='alert alert-warning'>Full name, username, email, and contact number are required.</div>";
   } else {
-    $duplicate = $conn->prepare("SELECT user_id FROM tbl_users WHERE (fullname = ? OR username = ?) AND user_id != ? LIMIT 1");
-    $duplicate->bind_param("ssi", $newFullname, $newUsername, $userId);
+    $duplicate = $conn->prepare("SELECT user_id FROM tbl_users WHERE (fullname = ? OR username = ? OR email = ?) AND user_id != ? LIMIT 1");
+    $duplicate->bind_param("sssi", $newFullname, $newUsername, $newEmail, $userId);
     $duplicate->execute();
     $duplicate->store_result();
 
     if ($duplicate->num_rows > 0) {
-      $_SESSION["profile_message"] = "<div class='alert alert-danger'>Full name or username already exists.</div>";
+      $_SESSION["profile_message"] = "<div class='alert alert-danger'>Full name, username, or email already exists.</div>";
     } else {
       $changedFields = [];
 
@@ -73,8 +74,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["update_profile_detail
         $changedFields[] = "contact number";
       }
 
-      $update = $conn->prepare("UPDATE tbl_users SET fullname = ?, username = ?, phone = ? WHERE user_id = ?");
-      $update->bind_param("sssi", $newFullname, $newUsername, $newPhone, $userId);
+      $update = $conn->prepare("UPDATE tbl_users SET fullname = ?, username = ?, email = ?, phone = ? WHERE user_id = ?");
+      $update->bind_param("ssssi", $newFullname, $newUsername, $newEmail, $newPhone, $userId);
 
       if ($update->execute()) {
         $_SESSION["fullname"] = $newFullname;

@@ -27,14 +27,8 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
     <a href="property_info.php" class="nav-link d-flex align-items-center <?= $current_page === 'property_info.php' ? 'active' : '' ?>">
       <img src="../../assets/img/icons/land.png" class="sidebar-icon me-3">
-      <span>Property Information</span>
+      <span>Property Map</span>
     </a>
-
-    <a href="form_generation_client.php" class="nav-link d-flex align-items-center <?= $current_page === 'form_generation_client.php' ? 'active' : '' ?>">
-        <img src="../../assets/img/icons/google-forms.png" class="sidebar-icon me-3">
-        <span>Form Generation</span>
-    </a>
-
   </nav>
 
   <!-- ===== FOOTER (LOGOUT AT BOTTOM) ===== -->

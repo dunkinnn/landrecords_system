@@ -7,26 +7,40 @@ $message = "";
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $username = trim($_POST['username']);
+    $email    = trim($_POST['email']);
     $fullname = trim($_POST['fullname']);
     $phone    = trim($_POST['phone']);
     $password = trim($_POST['password']);
     $role     = "client";
 
-    if (!empty($username) && !empty($fullname) && !empty($phone) && !empty($password)) {
+    if (!empty($username) && !empty($email) && !empty($fullname) && !empty($phone) && !empty($password)) {
 
-        // Check if username exists
-        $check = $conn->prepare("SELECT user_id FROM tbl_users WHERE username = ? OR fullname = ?");
-        $check->bind_param("ss", $username, $fullname);
+        // Check if username, email, or fullname exists
+        $check = $conn->prepare("SELECT user_id, username, email, fullname FROM tbl_users WHERE username = ? OR email = ? OR fullname = ?");
+        $check->bind_param("sss", $username, $email, $fullname);
         $check->execute();
         $check->store_result();
+        $check->bind_result($existingUserId, $existingUsername, $existingEmail, $existingFullname);
 
         if ($check->num_rows > 0) {
-            $message = "<div class='alert alert-danger text-center'>Username already exists.</div>";
+            $check->fetch();
+
+            $existingUsername = (string)($existingUsername ?? "");
+            $existingEmail = (string)($existingEmail ?? "");
+            $existingFullname = (string)($existingFullname ?? "");
+
+            if (strcasecmp($existingEmail, $email) === 0) {
+                $message = "<div class='alert alert-danger text-center'>Email already exists.</div>";
+            } elseif (strcasecmp($existingUsername, $username) === 0) {
+                $message = "<div class='alert alert-danger text-center'>Username already exists.</div>";
+            } else {
+                $message = "<div class='alert alert-danger text-center'>Full name already exists.</div>";
+            }
         } else {
             $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-            $stmt = $conn->prepare("INSERT INTO tbl_users (username, fullname, phone, password, role) VALUES (?, ?, ?, ?, ?)");
-            $stmt->bind_param("sssss", $username, $fullname, $phone, $hashed_password, $role);
+            $stmt = $conn->prepare("INSERT INTO tbl_users (username, email, fullname, phone, password, role) VALUES (?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param("ssssss", $username, $email, $fullname, $phone, $hashed_password, $role);
 
             if ($stmt->execute()) {
                 logAuditTrail($conn, "Signed up", "New client account registered.", $stmt->insert_id, $username, $role);
@@ -73,6 +87,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             <div class="form-group">
                 <input type="text" name="username" placeholder="Username" required>
+            </div>
+
+            <div class="form-group">
+                <input type="email" name="email" placeholder="Email" required>
             </div>
 
             <div class="form-group">

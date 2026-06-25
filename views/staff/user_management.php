@@ -20,9 +20,11 @@ if ($_SERVER["REQUEST_METHOD"] === "GET" && ($_GET["action"] ?? "") === "check_u
 
   $fullname = trim($_GET["fullname"] ?? "");
   $username = trim($_GET["username"] ?? "");
+  $email = trim($_GET["email"] ?? "");
   $response = [
     "fullnameExists" => false,
-    "usernameExists" => false
+    "usernameExists" => false,
+    "emailExists" => false
   ];
 
   if ($fullname !== "") {
@@ -43,6 +45,15 @@ if ($_SERVER["REQUEST_METHOD"] === "GET" && ($_GET["action"] ?? "") === "check_u
     $stmt->close();
   }
 
+  if ($email !== "") {
+    $stmt = $conn->prepare("SELECT user_id FROM tbl_users WHERE email = ? LIMIT 1");
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $stmt->store_result();
+    $response["emailExists"] = $stmt->num_rows > 0;
+    $stmt->close();
+  }
+
   echo json_encode($response);
   exit;
 }
@@ -51,31 +62,39 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["add_user"])) {
   $role = strtolower(trim($_POST["role"] ?? ""));
   $fullname = trim($_POST["fullname"] ?? "");
   $username = trim($_POST["username"] ?? "");
+  $email = trim($_POST["email"] ?? "");
   $phone = trim($_POST["phone"] ?? "");
   $password = trim($_POST["password"] ?? "");
 
   if (!in_array($role, ["staff", "client"], true)) {
     redirectWithUserFlash("user_management_message", "<div class='alert alert-danger'>Please select a valid user type.</div>");
-  } elseif ($fullname === "" || $username === "" || $phone === "" || $password === "") {
+  } elseif ($fullname === "" || $username === "" || $email === "" || $phone === "" || $password === "") {
     redirectWithUserFlash("user_management_message", "<div class='alert alert-warning'>All fields are required.</div>");
   } else {
-    $check = $conn->prepare("SELECT user_id, fullname, username FROM tbl_users WHERE fullname = ? OR username = ? LIMIT 1");
-    $check->bind_param("ss", $fullname, $username);
+    $check = $conn->prepare("SELECT user_id, fullname, username, email FROM tbl_users WHERE fullname = ? OR username = ? OR email = ? LIMIT 1");
+    $check->bind_param("sss", $fullname, $username, $email);
     $check->execute();
     $check->store_result();
-    $check->bind_result($existingUserId, $existingFullname, $existingUsername);
+    $check->bind_result($existingUserId, $existingFullname, $existingUsername, $existingEmail);
 
     if ($check->num_rows > 0) {
       $check->fetch();
-      $errorMessage = strcasecmp($existingUsername, $username) === 0
-        ? "Username already exists."
-        : "Full name already exists.";
+      $existingUsername = (string)($existingUsername ?? "");
+      $existingEmail = (string)($existingEmail ?? "");
+
+      if (strcasecmp($existingEmail, $email) === 0) {
+        $errorMessage = "Email already exists.";
+      } elseif (strcasecmp($existingUsername, $username) === 0) {
+        $errorMessage = "Username already exists.";
+      } else {
+        $errorMessage = "Full name already exists.";
+      }
       $check->close();
       redirectWithUserFlash("user_management_message", "<div class='alert alert-danger'>" . $errorMessage . "</div>");
     } else {
       $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-      $stmt = $conn->prepare("INSERT INTO tbl_users (username, fullname, phone, password, role) VALUES (?, ?, ?, ?, ?)");
-      $stmt->bind_param("sssss", $username, $fullname, $phone, $hashedPassword, $role);
+      $stmt = $conn->prepare("INSERT INTO tbl_users (username, fullname, email, phone, password, role) VALUES (?, ?, ?, ?, ?, ?)");
+      $stmt->bind_param("ssssss", $username, $fullname, $email, $phone, $hashedPassword, $role);
 
       if ($stmt->execute()) {
         logAuditTrail($conn, "Added user account", "Created " . ucfirst($role) . " account for " . $fullname . ".");
@@ -102,7 +121,7 @@ if (isset($_SESSION["user_management_success"])) {
 }
 
 $users = [];
-$usersResult = $conn->query("SELECT user_id, fullname, username, phone, role, status FROM tbl_users ORDER BY user_id DESC");
+$usersResult = $conn->query("SELECT user_id, fullname, username, email, phone, role, status FROM tbl_users ORDER BY user_id DESC");
 if ($usersResult) {
   while ($row = $usersResult->fetch_assoc()) {
     $users[] = $row;
@@ -132,14 +151,32 @@ if ($usersResult) {
       <div class="form-container">
         <!-- FILTERS + SEARCH -->
         <div class="form-controls">
-          <div class="input-group search-box">
-            <span class="input-group-text"><i class="bi bi-search"></i></span>
-            <input type="text" class="form-control search-input" id="userSearchInput" placeholder="Search user...">
+          <div class="controls-left">
+            <select class="form-select filter-input" id="userRoleFilter">
+              <option value="">All Roles</option>
+              <option value="staff">Staff</option>
+              <option value="client">Client</option>
+              <option value="admin">Admin</option>
+            </select>
+
+            <select class="form-select filter-input" id="userStatusFilter">
+              <option value="">All Statuses</option>
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+            </select>
           </div>
-          <button type="button" class="btn btn-primary add-user-btn d-flex align-items-center justify-content-center gap-2 text-nowrap" data-bs-toggle="modal" data-bs-target="#addUserModal">
-            <i class="bi bi-person-plus"></i>
-            <span>Add User</span>
-          </button>
+
+          <div class="controls-right">
+            <div class="input-group search-box">
+              <span class="input-group-text"><i class="bi bi-search"></i></span>
+              <input type="text" class="form-control search-input" id="userSearchInput" placeholder="Search user...">
+            </div>
+
+            <button type="button" class="btn btn-primary add-user-btn d-flex align-items-center justify-content-center gap-2 text-nowrap" data-bs-toggle="modal" data-bs-target="#addUserModal">
+              <i class="bi bi-person-plus"></i>
+              <span>Add User</span>
+            </button>
+          </div>
         </div>
 
         <!-- USER TABLE -->
@@ -150,6 +187,7 @@ if ($usersResult) {
                 <th>User ID</th>
                 <th>Full Name</th>
                 <th>Username</th>
+                <th>Email</th>
                 <th>Phone Number</th>
                 <th>Role</th>
                 <th>Status</th>
@@ -162,17 +200,18 @@ if ($usersResult) {
                     <td><?php echo htmlspecialchars("USR-" . str_pad($user["user_id"], 3, "0", STR_PAD_LEFT)); ?></td>
                     <td><?php echo htmlspecialchars($user["fullname"] ?? ""); ?></td>
                     <td><?php echo htmlspecialchars($user["username"]); ?></td>
+                    <td><?php echo htmlspecialchars($user["email"] ?? ""); ?></td>
                     <td><?php echo htmlspecialchars($user["phone"]); ?></td>
                     <td><?php echo htmlspecialchars(ucfirst($user["role"])); ?></td>
                     <td><?php echo htmlspecialchars(ucfirst($user["status"])); ?></td>
                   </tr>
                 <?php endforeach; ?>
                 <tr class="no-search-results d-none">
-                  <td colspan="6" class="text-center text-muted">No matching users found.</td>
+                  <td colspan="7" class="text-center text-muted">No matching users found.</td>
                 </tr>
               <?php else: ?>
               <tr>
-                <td colspan="6" class="text-center text-muted">No users found.</td>
+                <td colspan="7" class="text-center text-muted">No users found.</td>
               </tr>
               <?php endif; ?>
             </tbody>
@@ -226,7 +265,7 @@ if ($usersResult) {
               <select class="form-select" id="userRole" name="role" required>
                 <option value="" selected disabled>Select user type</option>
                 <option value="staff">Staff</option>
-                <option value="client">Client</option>
+                <option value="client">Client</option>o
               </select>
             </div>
             <div class="mb-3">
@@ -238,6 +277,11 @@ if ($usersResult) {
               <label for="username" class="form-label">Username</label>
               <input type="text" class="form-control" id="username" name="username" required>
               <div class="invalid-feedback" id="usernameFeedback">Username already exists.</div>
+            </div>
+            <div class="mb-3">
+              <label for="email" class="form-label">Email</label>
+              <input type="email" class="form-control" id="email" name="email" required>
+              <div class="invalid-feedback" id="emailFeedback">Email already exists.</div>
             </div>
             <div class="mb-3">
               <label for="phoneNumber" class="form-label">Phone Number</label>
@@ -268,7 +312,10 @@ if ($usersResult) {
     const addUserForm = document.getElementById("addUserForm");
     const fullNameInput = document.getElementById("fullName");
     const usernameInput = document.getElementById("username");
+    const emailInput = document.getElementById("email");
     const userSearchInput = document.getElementById("userSearchInput");
+    const userRoleFilter = document.getElementById("userRoleFilter");
+    const userStatusFilter = document.getElementById("userStatusFilter");
     const userRows = Array.from(document.querySelectorAll(".user-row"));
     const noSearchResultsRow = document.querySelector(".no-search-results");
     const entriesInfo = document.getElementById("entriesInfo");
@@ -280,16 +327,26 @@ if ($usersResult) {
     let duplicateCheckTimer;
     let hasDuplicateFullname = false;
     let hasDuplicateUsername = false;
+    let hasDuplicateEmail = false;
     let isCheckingDuplicate = false;
     let currentPage = 1;
     const rowsPerPage = 10;
 
     function getFilteredRows() {
       const searchTerm = userSearchInput.value.trim().toLowerCase();
+      const selectedRole = userRoleFilter.value.trim().toLowerCase();
+      const selectedStatus = userStatusFilter.value.trim().toLowerCase();
 
       return userRows.filter(function (row) {
         const rowText = row.textContent.toLowerCase();
-        return rowText.includes(searchTerm);
+        const rowRole = row.children[5]?.textContent.trim().toLowerCase() || "";
+        const rowStatus = row.children[6]?.textContent.trim().toLowerCase() || "";
+
+        const matchesSearch = rowText.toLowerCase().includes(searchTerm);
+        const matchesRole = selectedRole === "" || rowRole === selectedRole;
+        const matchesStatus = selectedStatus === "" || rowStatus === selectedStatus;
+
+        return matchesSearch && matchesRole && matchesStatus;
       });
     }
 
@@ -389,6 +446,17 @@ if ($usersResult) {
       });
     }
 
+    [userRoleFilter, userStatusFilter].forEach(function (filter) {
+      if (!filter) {
+        return;
+      }
+
+      filter.addEventListener("change", function () {
+        currentPage = 1;
+        updateUserTable();
+      });
+    });
+
     updateUserTable();
 
     function setFieldError(input, hasError) {
@@ -396,7 +464,7 @@ if ($usersResult) {
     }
 
     function updateSaveButtonState() {
-      saveButton.disabled = hasDuplicateFullname || hasDuplicateUsername || isCheckingDuplicate;
+      saveButton.disabled = hasDuplicateFullname || hasDuplicateUsername || hasDuplicateEmail || isCheckingDuplicate;
     }
 
     function checkDuplicateUserFields() {
@@ -405,12 +473,15 @@ if ($usersResult) {
       duplicateCheckTimer = setTimeout(function () {
         const fullname = fullNameInput.value.trim();
         const username = usernameInput.value.trim();
+        const email = emailInput.value.trim();
 
-        if (fullname === "" && username === "") {
+        if (fullname === "" && username === "" && email === "") {
           hasDuplicateFullname = false;
           hasDuplicateUsername = false;
+          hasDuplicateEmail = false;
           setFieldError(fullNameInput, false);
           setFieldError(usernameInput, false);
+          setFieldError(emailInput, false);
           updateSaveButtonState();
           return;
         }
@@ -421,7 +492,8 @@ if ($usersResult) {
         const params = new URLSearchParams({
           action: "check_user",
           fullname: fullname,
-          username: username
+          username: username,
+          email: email
         });
 
         fetch(`${window.location.pathname}?${params.toString()}`, {
@@ -435,14 +507,18 @@ if ($usersResult) {
           .then(function (data) {
             hasDuplicateFullname = Boolean(data.fullnameExists);
             hasDuplicateUsername = Boolean(data.usernameExists);
+            hasDuplicateEmail = Boolean(data.emailExists);
             setFieldError(fullNameInput, hasDuplicateFullname);
             setFieldError(usernameInput, hasDuplicateUsername);
+            setFieldError(emailInput, hasDuplicateEmail);
           })
           .catch(function () {
             hasDuplicateFullname = false;
             hasDuplicateUsername = false;
+            hasDuplicateEmail = false;
             setFieldError(fullNameInput, false);
             setFieldError(usernameInput, false);
+            setFieldError(emailInput, false);
           })
           .finally(function () {
             isCheckingDuplicate = false;
@@ -453,14 +529,17 @@ if ($usersResult) {
 
     fullNameInput.addEventListener("input", checkDuplicateUserFields);
     usernameInput.addEventListener("input", checkDuplicateUserFields);
+    emailInput.addEventListener("input", checkDuplicateUserFields);
 
     addUserModal.addEventListener("hidden.bs.modal", function () {
       clearTimeout(duplicateCheckTimer);
       hasDuplicateFullname = false;
       hasDuplicateUsername = false;
+      hasDuplicateEmail = false;
       isCheckingDuplicate = false;
       setFieldError(fullNameInput, false);
       setFieldError(usernameInput, false);
+      setFieldError(emailInput, false);
       saveButton.disabled = false;
       saveText.classList.remove("d-none");
       saveLoading.classList.add("d-none");

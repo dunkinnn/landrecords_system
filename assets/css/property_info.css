@@ -4,6 +4,60 @@ h2.page-title {
   margin-bottom: 1rem;
 }
 
+#propertyMap {
+  height: 420px;
+  width: 100%;
+  border-radius: 14px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  background: linear-gradient(135deg, rgba(82, 176, 40, 0.08), rgba(47, 128, 237, 0.08));
+}
+
+.map-shell {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  padding: 18px;
+  margin-bottom: 18px;
+}
+
+.map-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  margin-top: 10px;
+  color: #6c757d;
+  font-size: 14px;
+}
+
+.property-details-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px 18px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.property-detail-label {
+  display: block;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #6c757d;
+  margin-bottom: 3px;
+}
+
+.property-detail-value {
+  font-weight: 600;
+  color: #212529;
+  word-break: break-word;
+}
+
+.map-actions .btn {
+  white-space: nowrap;
+}
+
 /* Form Container */
 .form-container {
   background: #fff;
@@ -71,4 +125,10 @@ h2.page-title {
 
 .table-responsive {
   overflow-x: auto;
+}
+
+@media (max-width: 768px) {
+  .property-details-grid {
+    grid-template-columns: 1fr;
+  }
 }
