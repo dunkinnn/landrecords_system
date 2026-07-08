@@ -22,10 +22,19 @@ function loadFormTemplate($documentType) {
     
     // Check if the template file exists
     if (file_exists($templateFile)) {
-        // Use output buffering to capture the template content
+        // Use output buffering to capture the main template content
         ob_start();
         include $templateFile;
         $content = ob_get_clean();
+
+        // Check for a companion -BACK.php file (multi-page forms)
+        $backFile = $templatesDir . $safeType . '-BACK.php';
+        if (file_exists($backFile)) {
+            ob_start();
+            include $backFile;
+            $content .= ob_get_clean();
+        }
+
         return $content;
     }
     
