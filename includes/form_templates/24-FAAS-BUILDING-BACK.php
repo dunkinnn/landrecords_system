@@ -187,9 +187,8 @@
         </table>
         <button type="button" class="btn btn-sm btn-outline-secondary" id="faas_add_superseded_btn">+ Add Row</button>
     </div>
-    <!-- ============================================================ -->
+    
     <!-- SIGNATURES / APPROVAL -->
-    <!-- ============================================================ -->
     <div class="col-12 mt-4">
         <h6 class="border-bottom pb-2 fw-bold">Appraised, Recommended, and Approved By</h6>
     </div>
@@ -208,10 +207,9 @@
         <input type="text" class="form-control mb-2" name="approved_by_name" placeholder="Name">
         <input type="date" class="form-control" name="approved_by_date">
     </div>
-    <!-- ============================================================ -->
+
     <!-- FORM NAVIGATION -->
-    <!-- ============================================================ -->
-    <div class="col-12 mt-4 d-flex justify-content-end gap-2">
+=    <div class="col-12 mt-4 d-flex justify-content-end gap-2">
         <button type="button" class="btn btn-outline-secondary px-4" id="faas_building_back_btn">
             Back
         </button>

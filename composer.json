@@ -1,0 +1,17 @@
+{
+    "name": "angeloumae/landrecords_system",
+    "autoload": {
+        "psr-4": {
+            "Angeloumae\\LandrecordsSystem\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Angelou Bulauan",
+            "email": "angeloubulauan04@gmail.com"
+        }
+    ],
+    "require": {
+        "dompdf/dompdf": "^3.1"
+    }
+}
