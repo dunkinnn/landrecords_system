@@ -1,17 +1,36 @@
 <?php
 /**
  * Endpoint: generate_faas_building_pdf.php
- * Renders the FAAS Building & Other Improvements sheet (front + back)
- * as a single PDF, Letter size, matching the real form's layout as
- * closely as possible from the samples reviewed.
+ * FPDI coordinate-overlay approach: imports the actual blank
+ * "FAAS - BUILDING" PDF (front + back) as a template and writes
+ * field values directly on top at fixed coordinates, rather than
+ * rebuilding the layout from scratch.
  *
- * Known fidelity gaps (not fabricated, see docs/activity-log.md):
- * - Flooring/Walls per-floor (1st/2nd/3rd/4th) checkbox columns are
- *   drawn but left empty - the Building form only captures one flat
- *   material list with no per-floor breakdown.
- * - The plain-text "Additional Items" description box (top of back
- *   page) is drawn empty - only the costed itemized list is captured
- *   by the current form.
+ * SETUP REQUIRED:
+ * 1. Place the blank template PDF at: api/pdf_templates/FAAS-BUILDING-blank.pdf
+ * 2. FPDI must be installed: composer require setasign/fpdi setasign/fpdf
+ *    (if Packagist is blocked on your network, clone from GitHub as done
+ *    previously - see docs/activity-log.md for that precedent)
+ *
+ * COORDINATES: extracted via OCR from the blank template (in points,
+ * top-left origin, Letter size 612x792) and cross-checked against the
+ * visible row spacing pattern. Most are OCR-confirmed; a few rows where
+ * OCR missed text were inferred from the consistent ~18.2pt row
+ * spacing nearby. Expect to nudge some x/y values after a real test
+ * print - this was not (and cannot be) rendered and visually verified
+ * against the actual template in this environment.
+ *
+ * KNOWN GAP: the real template's Roof checklist includes a "Concrete
+ * Desc" option that does not exist anywhere in 24-FAAS-BUILDING.php's
+ * roof_material checkbox list. It cannot be marked because the current
+ * form never captures it. Flagged, not fabricated.
+ *
+ * KNOWN LIMITATION: the template has per-floor (1st/2nd/3rd/4th)
+ * checkbox columns for Flooring and Walls. Since the form only
+ * captures one flat list per material (no per-floor data), any
+ * selected material is marked in the "1st Flr" column only, as a
+ * best-effort placement - not a claim that it is specifically 1st
+ * floor data.
  */
 session_start();
 require_once '../includes/auth.php';
@@ -19,7 +38,7 @@ require_once '../includes/db.php';
 require_once 'faas_pdf_data.php';
 require_once '../vendor/autoload.php';
 
-use Dompdf\Dompdf;
+use setasign\Fpdi\Fpdi;
 
 $id = (int) ($_GET['id'] ?? 0);
 if (!$id) {
@@ -33,9 +52,15 @@ if (!$r) {
     die('Record not found.');
 }
 
-function esc($v) { return htmlspecialchars($v ?? '', ENT_QUOTES); }
-function fmtMoney($v) { return $v !== null && $v !== '' ? number_format((float) $v, 2) : ''; }
-function fmtNum($v) { return $v !== null && $v !== '' ? rtrim(rtrim(number_format((float) $v, 2), '0'), '.') : ''; }
+$templatePath = __DIR__ . '/pdf_templates/FAAS-BUILDING-blank.pdf';
+if (!file_exists($templatePath)) {
+    http_response_code(500);
+    die('Blank template not found at ' . $templatePath . '. Place the PDF there first.');
+}
+
+function v($val) { return $val === null ? '' : (string) $val; }
+function money($val) { return $val !== null && $val !== '' ? number_format((float) $val, 2) : ''; }
+function num($val) { return $val !== null && $val !== '' ? rtrim(rtrim(number_format((float) $val, 2), '0'), '.') : ''; }
 
 $materials = function ($csv) {
     return $csv ? array_map('trim', explode(',', $csv)) : [];
@@ -43,317 +68,177 @@ $materials = function ($csv) {
 $roofMaterials = $materials($r['roof_material']);
 $floorMaterials = $materials($r['floor_material']);
 $wallMaterials = $materials($r['wall_material']);
-$mk = function ($list, $value) { return in_array($value, $list, true) ? 'X' : ''; };
-
-$itemsRows = '';
-$itemsTotal = 0;
-foreach ($r['items'] as $item) {
-    $itemsTotal += (float) $item['amount'];
-    $itemsRows .= '<tr><td>' . esc($item['description']) . '</td><td class="text-end">' . fmtMoney($item['amount']) . '</td></tr>';
-}
-$itemsPadRows = '';
-for ($i = count($r['items']); $i < 5; $i++) {
-    $itemsPadRows .= '<tr><td>&nbsp;</td><td>&nbsp;</td></tr>';
-}
 
 $latestSuperseded = $r['superseded'][0] ?? null;
 
-// Roof rows (single list, no per-floor split)
-$roofItems = ['Reinforced Concrete', 'Tiles', 'G.I. Sheet', 'Aluminum', 'Asbestos', 'Long Span', 'Nipa/Anahaw/Cogon'];
-$roofRowsHtml = '';
-foreach ($roofItems as $item) {
-    $roofRowsHtml .= '<tr><td>' . esc($item) . '</td><td class="text-center">' . $mk($roofMaterials, $item) . '</td></tr>';
+// --- PDF setup: unit 'pt' so all coordinates below match the OCR extraction directly ---
+$pdf = new Fpdi('P', 'pt', [612, 792]);
+$pdf->SetAutoPageBreak(false);
+$pdf->setSourceFile($templatePath);
+
+/**
+ * Writes text with $y treated as the TOP of the label (matching how the
+ * coordinates were extracted), converting internally to FPDF's
+ * baseline-based Text() by nudging down roughly the font's ascent.
+ */
+function put($pdf, $x, $yTop, $text, $size = 8, $bold = false) {
+    if ($text === '' || $text === null) return;
+    $pdf->SetFont('Arial', $bold ? 'B' : '', $size);
+    $pdf->Text($x, $yTop + ($size * 0.78), $text);
 }
-$roofRowsHtml .= '<tr><td>Others (Specify): ' . esc($r['roof_material_other']) . '</td><td class="text-center">' . $mk($roofMaterials, 'Others') . '</td></tr>';
 
-// Flooring / Walls rows (with 4 empty per-floor columns each, not captured by the form)
-$floorItems = ['Reinforced Concrete (for upper floors)', 'Plain Cement', 'Marble', 'Wood', 'Tiles', 'Bamboo'];
-$wallItems = ['Reinforced Concrete', 'Plain Cement', 'Wood', 'CHB', 'G.I. Sheet', 'Build-a-Wall', 'Sawali', 'Bamboo'];
-$maxRows = max(count($floorItems), count($wallItems));
-$materialGridRows = '';
-for ($i = 0; $i < $maxRows; $i++) {
-    $floorLabel = $floorItems[$i] ?? '';
-    $floorCheck = $floorLabel ? $mk($floorMaterials, $floorLabel === 'Reinforced Concrete (for upper floors)' ? 'Reinforced Concrete' : $floorLabel) : '';
-    $wallLabel = $wallItems[$i] ?? '';
-    $wallCheck = $wallLabel ? $mk($wallMaterials, $wallLabel) : '';
-    $materialGridRows .= '<tr>
-        <td>' . esc($floorLabel) . '</td>
-        <td class="text-center">' . ($i === 0 ? '' : $floorCheck) . '</td><td></td><td></td><td></td>
-        <td>' . esc($wallLabel) . '</td>
-        <td class="text-center">' . $wallCheck . '</td><td></td><td></td><td></td>
-    </tr>';
+function mark($pdf, $x, $yTop, $selected) {
+    if ($selected) {
+        put($pdf, $x, $yTop, 'X', 8, true);
+    }
 }
-$materialGridRows .= '<tr>
-    <td>Others: ' . esc($r['floor_material_other']) . '</td>
-    <td class="text-center">' . $mk($floorMaterials, 'Others') . '</td><td></td><td></td><td></td>
-    <td>Others: ' . esc($r['wall_material_other']) . '</td>
-    <td class="text-center">' . $mk($wallMaterials, 'Others') . '</td><td></td><td></td><td></td>
-</tr>';
 
-$html = '<html><head><style>
-    @page { margin: 20px 24px; }
-    body { font-family: DejaVu Sans, sans-serif; font-size: 8px; color:#111; }
-    table { width: 100%; border-collapse: collapse; }
-    td, th { border: 1px dashed #666; padding: 2px 4px; vertical-align: top; }
-    .flat td { border: none; padding: 1px 3px; }
-    .lbl { font-size: 7px; }
-    .section-lbl { font-weight: bold; font-size: 8px; margin: 6px 0 1px 0; }
-    h1 { text-align: center; font-size: 11px; margin: 0 0 2px 0; }
-    .text-end { text-align: right; }
-    .text-center { text-align: center; }
-    .top-row td { border: none; }
-    .page-break { page-break-before: always; }
-    .half { width: 50%; }
-    .hl { background: #e2efda; }
-    .floorhdr { font-size: 5.5px; padding: 1px; }
-</style></head><body>
+// ============================================================
+// PAGE 1 (front)
+// ============================================================
+$tpl1 = $pdf->importPage(1);
+$pdf->AddPage();
+$pdf->useTemplate($tpl1);
 
-<h1>REAL PROPERTY FIELD APPRAISAL &amp; ASSESSMENT SHEET&mdash; BUILDING &amp; OTHER IMPROVEMENTS</h1>
-<table class="flat top-row"><tr><td class="text-end"><span class="lbl">TRANSACTION CODE:</span> <strong>' . esc($r['transaction_code']) . '</strong></td></tr></table>
+put($pdf, 510, 45, v($r['transaction_code']), 8, true);
 
-<table>
-    <tr>
-        <td style="width:50%;"><span class="lbl">ARP NO. :</span> <strong>' . esc($r['arp_no']) . '</strong></td>
-        <td style="width:50%;"><span class="lbl">P I N :</span> <strong>' . esc($r['pin']) . '</strong></td>
-    </tr>
-    <tr>
-        <td colspan="2"><span class="lbl">OWNER:</span> <strong>' . esc($r['owner_name']) . '</strong></td>
-    </tr>
-    <tr>
-        <td colspan="2"><span class="lbl">R. Address:</span> ' . esc($r['owner_address']) . '</td>
-    </tr>
-    <tr>
-        <td><span class="lbl">Tel No.:</span> ' . esc($r['owner_tel']) . '</td>
-        <td><span class="lbl">T I N:</span> ' . esc($r['owner_tin']) . '</td>
-    </tr>
-    <tr>
-        <td colspan="2"><span class="lbl">Administrator / Beneficial User:</span> ' . esc($r['beneficial_user']) . '</td>
-    </tr>
-    <tr>
-        <td colspan="2"><span class="lbl">R. Address:</span> ' . esc($r['beneficial_address']) . '</td>
-    </tr>
-    <tr>
-        <td><span class="lbl">Tel No.:</span> ' . esc($r['admin_tel']) . '</td>
-        <td><span class="lbl">T I N:</span> ' . esc($r['admin_tin']) . '</td>
-    </tr>
-</table>
+put($pdf, 120, 66, v($r['arp_no']), 15, true);
+put($pdf, 360   , 66, v($r['pin']), 15, true);
+put($pdf, 118, 92.6, v($r['owner_name']), 10, true);
+put($pdf, 125, 110.9, v($r['owner_address']));
+put($pdf, 112, 128.6, v($r['owner_tel']));
+put($pdf, 345, 128.6, v($r['owner_tin']));
+put($pdf, 225, 146, v($r['beneficial_user']));
+put($pdf, 125, 164.2, v($r['beneficial_address']));
+put($pdf, 112, 181.9, v($r['admin_tel']));
+put($pdf, 345, 181.9, v($r['admin_tin']));
 
-<table class="flat"><tr>
-    <td class="section-lbl half">BUILDING LOCATION</td>
-    <td class="section-lbl half">LAND REFERENCE</td>
-</tr></table>
-<table>
-    <tr>
-        <td style="width:25%;"><span class="lbl">No. / Street:</span></td><td style="width:25%;">' . esc($r['street']) . '</td>
-        <td style="width:25%;"><span class="lbl">OWNER:</span></td><td style="width:25%;">' . esc($r['land_owner']) . '</td>
-    </tr>
-    <tr>
-        <td><span class="lbl">Brgy. / District:</span></td><td>' . esc($r['barangay']) . '</td>
-        <td><span class="lbl">OCT/TCT/CLOA:</span></td><td>' . esc($r['oct_tct_no']) . '</td>
-    </tr>
-    <tr>
-        <td><span class="lbl">Municipality:</span></td><td>' . esc($r['municipality']) . '</td>
-        <td><span class="lbl">SURVEY NO.:</span></td><td>' . esc($r['survey_number']) . '</td>
-    </tr>
-    <tr>
-        <td><span class="lbl">Province / City:</span></td><td>' . esc($r['province']) . '</td>
-        <td><span class="lbl">LOT NO. / BLK NO.:</span></td><td>' . esc($r['lot_number']) . ' / ' . esc($r['block_number']) . '</td>
-    </tr>
-    <tr>
-        <td></td><td></td>
-        <td><span class="lbl">AREA:</span></td><td>' . fmtNum($r['land_area']) . ' sqm.</td>
-    </tr>
-</table>
+// Building Location
+put($pdf, 140, 228, v($r['street']));
+put($pdf, 140, 251, v($r['barangay']));
+put($pdf, 155, 271.2, v($r['municipality']));
+put($pdf, 155, 296.2, v($r['province']));
 
-<div class="section-lbl">GENERAL DESCRIPTION</div>
-<table>
-    <tr>
-        <td style="width:25%;"><span class="lbl">Kind of Bldg:</span></td><td style="width:25%;">' . esc($r['building_kind']) . '</td>
-        <td style="width:25%;"><span class="lbl">Bldg Age:</span></td><td style="width:25%;">' . esc($r['building_age']) . '</td>
-    </tr>
-    <tr>
-        <td><span class="lbl">Structural Type:</span></td><td>' . esc($r['structural_type']) . '</td>
-        <td><span class="lbl">No. of Storeys:</span></td><td>' . esc($r['storeys']) . '</td>
-    </tr>
-    <tr>
-        <td><span class="lbl">Bldg. Permit No.:</span></td><td>' . esc($r['building_permit_no']) . '</td>
-        <td><span class="lbl">Area of 1st Flr.:</span></td><td>' . fmtNum($r['first_floor_area']) . '</td>
-    </tr>
-    <tr>
-        <td><span class="lbl">Date Issued:</span></td><td>' . esc($r['permit_date']) . '</td>
-        <td><span class="lbl">Area of 2nd Flr.:</span></td><td>' . fmtNum($r['second_floor_area']) . '</td>
-    </tr>
-    <tr>
-        <td><span class="lbl">Condominium Certificate of Title (CCT):</span></td><td>' . esc($r['cct_no']) . '</td>
-        <td><span class="lbl">Area of 3rd Flr.:</span></td><td>' . fmtNum($r['third_floor_area']) . '</td>
-    </tr>
-    <tr>
-        <td><span class="lbl">Certificate of Completion Issued On:</span></td><td>' . esc($r['cert_completion_date']) . '</td>
-        <td><span class="lbl">Area of 4th Flr.:</span></td><td>' . fmtNum($r['fourth_floor_area']) . '</td>
-    </tr>
-    <tr>
-        <td><span class="lbl">Certificate of Occupancy Issued On:</span></td><td>' . esc($r['cert_occupancy_date']) . '</td>
-        <td></td><td></td>
-    </tr>
-    <tr>
-        <td><span class="lbl">Date Constructed/Completed:</span></td><td>' . esc($r['date_constructed']) . '</td>
-        <td></td><td></td>
-    </tr>
-    <tr>
-        <td><span class="lbl">Date Occupied:</span></td><td>' . esc($r['date_occupied']) . '</td>
-        <td><span class="lbl">Total Floor Area:</span></td><td><strong>' . fmtNum($r['total_floor_area']) . ' sqm.</strong></td>
-    </tr>
-</table>
+// Land Reference
+put($pdf, 370, 220.8, v($r['land_owner']));
+put($pdf, 380, 250.6, v($r['oct_tct_no']));
+put($pdf, 447, 264, v($r['survey_number']));
+put($pdf, 360, 270.7, v($r['lot_number']));
+put($pdf, 480, 271.7, v($r['block_number']));
+put($pdf, 360, 289.4, num($r['land_area']));
 
-<div class="section-lbl">FLOOR PLAN</div>
-<table>
-    <tr><td style="height:26px;color:#555;text-align:center;">Attach the building plan or sketch of floor plan. A photograph may also be attached if necessary.</td></tr>
-</table>
+// General Description (y positions for the first 3 rows inferred from
+// the confirmed ~18.2pt spacing of rows below them - OCR missed these
+// specific rows on the blank template, see file header note)
+put($pdf, 150, 340, v($r['building_kind']));
+put($pdf, 400, 340, v($r['building_age']));
+put($pdf, 150, 358, v($r['structural_type']));
+put($pdf, 400, 358, v($r['storeys']));
+put($pdf, 200, 376, v($r['building_permit_no']));
+put($pdf, 400, 376, num($r['first_floor_area']));
+put($pdf, 250, 394.6, v($r['cct_no']));
+put($pdf, 400, 394.6, num($r['second_floor_area']));
+put($pdf, 250, 412.8, v($r['cert_completion_date']));
+put($pdf, 400, 412.8, num($r['third_floor_area']));
+put($pdf, 250, 430.6, v($r['cert_occupancy_date']));
+put($pdf, 400, 430.6, num($r['fourth_floor_area']));
+put($pdf, 200, 448.8, v($r['date_constructed']));
+put($pdf, 200, 466.6, v($r['date_occupied']));
+put($pdf, 400, 466.6, num($r['total_floor_area']) . ' sqm', 8, true);
 
-<div class="section-lbl">STRUCTURAL MATERIALS (Checklists)</div>
-<table>
-    <tr>
-        <th style="width:20%;">ROOF</th>
-        <th style="width:20%;">FLOORING</th>
-        <th class="floorhdr">1st<br>Flr</th><th class="floorhdr">2nd<br>Flr</th><th class="floorhdr">3rd<br>Flr</th><th class="floorhdr">4th<br>Flr</th>
-        <th style="width:20%;">WALLS &amp; PARTITIONS</th>
-        <th class="floorhdr">1st<br>Flr</th><th class="floorhdr">2nd<br>Flr</th><th class="floorhdr">3rd<br>Flr</th><th class="floorhdr">4th<br>Flr</th>
-    </tr>
-    <tr>
-        <td rowspan="' . (count($roofItems) + 2) . '" style="vertical-align:top;">
-            <table class="flat">' . $roofRowsHtml . '</table>
-        </td>
-        <td>Reinforced Concrete (for upper floors)</td><td></td><td></td><td></td><td></td>
-        <td>Reinforced Concrete</td><td class="text-center">' . $mk($wallMaterials, 'Reinforced Concrete') . '</td><td></td><td></td><td></td>
-    </tr>
-    ' . $materialGridRows . '
-</table>
-<div style="color:#b30000;font-size:6px;margin-top:1px;">Per-floor columns are shown for layout only - the current form captures one material list per category, not per floor.</div>
+// Structural Materials - the template already prints every material
+// name; we only mark an X where the record has that material selected.
+$roofRows = [
+    'Reinforced Concrete' => 596.6, 'Tiles' => 616.3, 'G.I. Sheet' => 636.0,
+    'Aluminum' => 654.2, 'Asbestos' => 666.7, 'Long Span' => 689.8,
+    'Nipa/Anahaw/Cogon' => 725.3, 'Others' => 739,
+];
+foreach ($roofRows as $name => $y) {
+    mark($pdf, 175, $y, in_array($name, $roofMaterials, true));
+}
+// "Concrete Desc" at y=707.5 on the real template has no corresponding
+// checkbox in the data-entry form - cannot be marked, see file header.
 
-<div class="page-break"></div>
+$floorRows = [
+    'Reinforced Concrete' => 592, 'Plain Cement' => 618, 'Marble' => 634,
+    'Wood' => 654, 'Tiles' => 670, 'Others' => 689, 'Bamboo' => 708,
+];
+foreach ($floorRows as $name => $y) {
+    mark($pdf, 329, $y, in_array($name, $floorMaterials, true));
+}
 
-<div class="section-lbl">ADDITIONAL ITEMS (Use additional sheet if necessary)</div>
-<table>
-    <tr><td colspan="3" style="color:#888;">Not captured separately from the itemized cost list below.</td></tr>
-</table>
+$wallRows = [
+    'Reinforced Concrete' => 596.6, 'Plain Cement' => 618.5, 'Wood' => 636.5,
+    'CHB' => 653.8, 'G.I. Sheet' => 671.5, 'Build-a-Wall' => 689.7,
+    'Sawali' => 707.5, 'Bamboo' => 725.8, 'Others' => 743,
+];
+foreach ($wallRows as $name => $y) {
+    mark($pdf, 500, $y, in_array($name, $wallMaterials, true));
+}
 
-<div class="section-lbl">PROPERTY APPRAISAL</div>
-<table>
-    <tr>
-        <td class="half" style="vertical-align:top;">
-            <table class="flat">
-                <tr><td class="lbl" style="width:55%;">Unit Construction Cost:</td><td class="text-end">P ' . fmtMoney($r['back_unit_construction_cost']) . ' / sq.m.</td></tr>
-                <tr><td colspan="2" class="lbl" style="padding-top:6px;">Building Core (use additional sheets if necessary)</td></tr>
-                <tr><td colspan="2" class="text-end hl">' . fmtNum($r['total_floor_area']) . ' sqm x P ' . fmtMoney($r['back_unit_construction_cost']) . ' /sqm = ' . fmtMoney($r['building_core_subtotal']) . '</td></tr>
-            </table>
-        </td>
-        <td class="half" style="vertical-align:top;">
-            <div class="lbl">Cost of Additional Items</div>
-            <table class="flat">' . $itemsRows . $itemsPadRows . '</table>
-            <table class="flat"><tr><td class="text-end hl"><strong>Sub-Total P ' . fmtMoney($itemsTotal) . '</strong></td></tr></table>
-        </td>
-    </tr>
-    <tr>
-        <td><span class="lbl">Sub - Total P</span> <span class="hl">' . fmtMoney($r['building_core_subtotal']) . '</span></td>
-        <td><span class="lbl">Total Construction Cost P</span> <span class="hl">' . fmtMoney($r['total_construction_cost']) . '</span></td>
-    </tr>
-    <tr>
-        <td><span class="lbl">Depreciation Rate</span> <span class="hl">' . esc($r['back_depreciation_rate']) . '%</span></td>
-        <td><span class="lbl">Total % Depreciation</span> <span class="hl">' . fmtMoney($r['depreciation_cost']) . '</span></td>
-    </tr>
-    <tr>
-        <td><span class="lbl">Depreciation Cost P</span> <span class="hl">' . fmtMoney($r['depreciation_cost']) . '</span></td>
-        <td><span class="lbl">Market Value P</span> <span class="hl">' . fmtMoney($r['back_market_value']) . '</span></td>
-    </tr>
-</table>
+// ============================================================
+// PAGE 2 (back)
+// ============================================================
+$tpl2 = $pdf->importPage(2);
+$pdf->AddPage();
+$pdf->useTemplate($tpl2);
 
-<div class="section-lbl">PROPERTY APPRAISAL</div>
-<table>
-    <tr>
-        <th>Actual Use</th><th>Market Value</th><th>Assessment Level</th><th>Assessed Value</th>
-    </tr>
-    <tr>
-        <td>' . esc($r['back_actual_use']) . '</td>
-        <td class="text-end">' . fmtMoney($r['back_assess_market_value']) . '</td>
-        <td class="text-center">' . esc($r['back_assessment_level']) . '%</td>
-        <td class="text-end">' . fmtMoney($r['back_assessed_value']) . '</td>
-    </tr>
-    <tr><td colspan="4">&nbsp;</td></tr>
-    <tr>
-        <td colspan="3" class="text-end"><strong>TOTAL</strong></td>
-        <td class="text-end"><strong>' . fmtMoney($r['back_total_assessed_value']) . '</strong></td>
-    </tr>
-</table>
+put($pdf, 195, 87.8, money($r['back_unit_construction_cost']));
+put($pdf, 95, 119.5, num($r['total_floor_area']));
+put($pdf, 150, 119.5, money($r['back_unit_construction_cost']));
+put($pdf, 240, 119.5, money($r['building_core_subtotal']));
+put($pdf, 130, 219.8, money($r['building_core_subtotal']));
+put($pdf, 410, 219.8, money($r['total_construction_cost']));
+put($pdf, 130, 235.7, v($r['back_depreciation_rate']) . '%');
+put($pdf, 410, 235.7, money($r['depreciation_cost']));
+put($pdf, 155, 253.0, money($r['depreciation_cost']));
+put($pdf, 370, 253.0, money($r['back_market_value']));
 
-<table class="flat" style="margin-top:2px;">
-    <tr>
-        <td style="width:8%;">[' . ($r['taxability'] === 'Taxable' ? 'X' : ' ') . ']</td>
-        <td style="width:15%;"><strong>TAXABLE</strong></td>
-        <td style="width:8%;">[' . ($r['taxability'] === 'Exempt' ? 'X' : ' ') . ']</td>
-        <td style="width:15%;">EXEMPT</td>
-        <td style="width:32%;">Effectivity of Assessment /Reassessment:</td>
-        <td style="width:11%;text-align:center;"><strong>' . esc($r['effectivity_quarter']) . '</strong><br><span class="lbl">Qtr</span></td>
-        <td style="width:11%;text-align:center;"><strong>' . esc($r['effectivity_year']) . '</strong><br><span class="lbl">Year</span></td>
-    </tr>
-</table>
+// Cost of Additional Items - itemized list, up to 5 rows before the
+// Sub-Total line at y=204
+$itemY = 135;
+foreach ($r['items'] as $item) {
+    if ($itemY > 195) break; // do not overrun the Sub-Total line
+    put($pdf, 340, $itemY, v($item['description']), 7);
+    put($pdf, 480, $itemY, money($item['amount']), 7);
+    $itemY += 17;
+}
+$itemsTotal = array_sum(array_column($r['items'], 'amount'));
+put($pdf, 480, 204, money($itemsTotal), 8, true);
 
-<table class="flat" style="margin-top:10px;">
-    <tr>
-        <td class="half"><span class="lbl">APPRAISED / ASSESSED BY :</span></td>
-        <td class="half"><span class="lbl">RECOMMENDING APPROVAL &nbsp;:</span></td>
-    </tr>
-    <tr><td colspan="2">&nbsp;</td></tr>
-    <tr>
-        <td class="text-center">' . esc($r['appraised_by_name']) . ' &nbsp;&nbsp; ' . esc($r['appraised_by_date']) . '<br><span class="lbl">Municipal Assessor &nbsp;&nbsp;&nbsp; Date</span></td>
-        <td class="text-center">' . esc($r['recommending_approval_name']) . ' &nbsp;&nbsp; ' . esc($r['recommending_approval_date']) . '<br><span class="lbl">Municipal Assessor &nbsp;&nbsp;&nbsp; Date</span></td>
-    </tr>
-</table>
+// Property Assessment (single row - see activity-log.md re: table only
+// supporting one actual-use row currently)
+put($pdf, 115, 315, v($r['back_actual_use']));
+put($pdf, 230, 315, money($r['back_assess_market_value']));
+put($pdf, 345, 315, v($r['back_assessment_level']) . '%');
+put($pdf, 475, 315, money($r['back_assessed_value']));
+put($pdf, 475, 362.4, money($r['back_total_assessed_value']), 8, true);
 
-<table class="flat" style="margin-top:10px;">
-    <tr><td><span class="lbl">APPROVED &nbsp;BY:</span></td></tr>
-    <tr><td>&nbsp;</td></tr>
-    <tr>
-        <td class="text-center"><strong>' . esc($r['approved_by_name']) . '</strong><br><span class="lbl">Provincial Assessor &nbsp;&nbsp;&nbsp; ' . esc($r['approved_by_date']) . '</span></td>
-    </tr>
-</table>
+mark($pdf, 118, 389, $r['taxability'] === 'Taxable');
+mark($pdf, 178, 389, $r['taxability'] === 'Exempt');
+put($pdf, 466, 388.8, v($r['effectivity_quarter']));
+put($pdf, 520, 388.8, v($r['effectivity_year']));
 
-<div class="section-lbl">MEMORANDA:</div>
-<table><tr><td class="hl" style="height:40px;">' . esc($r['memoranda']) . '</td></tr></table>
+put($pdf, 90, 465, v($r['appraised_by_name']), 8);
+put($pdf, 230, 465, v($r['appraised_by_date']), 8);
+put($pdf, 350, 465, v($r['recommending_approval_name']), 8);
+put($pdf, 460, 465, v($r['recommending_approval_date']), 8);
 
-<table class="flat" style="margin-top:10px;">
-    <tr>
-        <td style="width:50%;">Date of Entry in the Record of Assessment: _______________<br><span class="lbl" style="margin-left:60px;">Date</span></td>
-        <td style="width:50%;">By: _______________<br><span class="lbl" style="margin-left:20px;">Name</span></td>
-    </tr>
-</table>
+put($pdf, 150, 515, v($r['approved_by_name']), 8, true);
+put($pdf, 345, 515, v($r['approved_by_date']), 8);
 
-<div class="section-lbl">RECORD OF SUPERSEDED ASSESSMENT :</div>
-<table>
-    <tr>
-        <td style="width:15%;"><span class="lbl">P I N :</span></td><td style="width:35%;">' . esc($latestSuperseded['pin'] ?? '') . '</td>
-        <td style="width:20%;"><span class="lbl">ARP No./ TD No. :</span></td><td style="width:30%;"><strong>' . esc($latestSuperseded['arp_no'] ?? '') . '</strong></td>
-    </tr>
-    <tr>
-        <td><span class="lbl">Total Assessed Value :</span></td><td>' . fmtMoney($latestSuperseded['assessed_value'] ?? null) . '</td>
-        <td><span class="lbl">Effectivity of Assessment:</span></td><td>' . esc($latestSuperseded['effectivity'] ?? '') . '</td>
-    </tr>
-    <tr>
-        <td><span class="lbl">Previous Owner :</span></td><td>' . esc($latestSuperseded['previous_owner'] ?? '') . '</td>
-        <td><span class="lbl">AR Page No. :</span></td><td>' . esc($latestSuperseded['ar_page'] ?? '') . '</td>
-    </tr>
-    <tr>
-        <td><span class="lbl">Recording Person :</span></td><td>' . esc($latestSuperseded['recorder'] ?? '') . '</td>
-        <td><span class="lbl">Date :</span></td><td>' . esc($latestSuperseded['record_date'] ?? '') . '</td>
-    </tr>
-</table>
+put($pdf, 80, 558, v($r['memoranda']), 8);
 
-</body></html>';
-
-$dompdf = new Dompdf();
-$dompdf->loadHtml($html);
-$dompdf->setPaper('letter', 'portrait');
-$dompdf->render();
+// Record of Superseded Assessment
+put($pdf, 110, 701.8, v($latestSuperseded['pin'] ?? ''));
+put($pdf, 400, 701.8, v($latestSuperseded['arp_no'] ?? ''), 8, true);
+put($pdf, 170, 720, money($latestSuperseded['assessed_value'] ?? null));
+put($pdf, 420, 720, v($latestSuperseded['effectivity'] ?? ''));
+put($pdf, 150, 740.2, v($latestSuperseded['previous_owner'] ?? ''));
+put($pdf, 385, 740.2, v($latestSuperseded['ar_page'] ?? ''));
+put($pdf, 180, 763.7, v($latestSuperseded['recorder'] ?? ''));
+put($pdf, 350, 763.7, v($latestSuperseded['record_date'] ?? ''));
 
 faas_pdf_mark_generated($conn, $id);
 
-$dompdf->stream('FAAS-Building-' . preg_replace('/[^A-Za-z0-9-]/', '', $r['arp_no']) . '.pdf', ['Attachment' => false]);
+$pdf->Output('I', 'FAAS-Building-' . preg_replace('/[^A-Za-z0-9-]/', '', $r['arp_no']) . '.pdf');
