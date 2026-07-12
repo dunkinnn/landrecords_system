@@ -53,6 +53,18 @@ $propertyData = [];
 foreach ($propertyFields as $f) {
     $propertyData[$f] = $input[$f] ?? null;
 }
+
+/* Municipality/Province are always SAN PABLO, ISABELA for every record in
+   this system - set authoritatively here instead of trusting the browser
+   to have fired the barangay dropdown's change handler. This fixes blank
+   municipality/province on edit (populateForm() sets the select's value
+   via JS, which does not trigger a native change event) and any other
+   path where barangay ends up set without the frontend auto-fill running. */
+if (!empty($propertyData['barangay'])) {
+    $propertyData['municipality'] = 'SAN PABLO';
+    $propertyData['province'] = 'ISABELA';
+}
+
 $propertyId = upsert($conn, 'tbl_properties', normalizeEmpty($propertyData), 'id', $input['property_id'] ?? null);
 
 $buildingFields = ['lot_number', 'block_number', 'survey_number', 'oct_tct_no', 'land_owner', 'land_area',

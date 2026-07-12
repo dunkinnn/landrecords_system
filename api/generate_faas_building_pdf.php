@@ -100,48 +100,49 @@ $tpl1 = $pdf->importPage(1);
 $pdf->AddPage();
 $pdf->useTemplate($tpl1);
 
-put($pdf, 510, 45, v($r['transaction_code']), 8, true);
+put($pdf, 530, 45, v($r['transaction_code']), 8, true);
 
 put($pdf, 120, 66, v($r['arp_no']), 15, true);
-put($pdf, 360   , 66, v($r['pin']), 15, true);
+put($pdf, 360, 66, v($r['pin']), 15, true);
 put($pdf, 118, 92.6, v($r['owner_name']), 10, true);
-put($pdf, 125, 110.9, v($r['owner_address']));
-put($pdf, 112, 128.6, v($r['owner_tel']));
-put($pdf, 345, 128.6, v($r['owner_tin']));
-put($pdf, 225, 146, v($r['beneficial_user']));
-put($pdf, 125, 164.2, v($r['beneficial_address']));
-put($pdf, 112, 181.9, v($r['admin_tel']));
-put($pdf, 345, 181.9, v($r['admin_tin']));
+put($pdf, 125, 110, v($r['owner_address']), 10);
+put($pdf, 112, 128.6, v($r['owner_tel']), 9);
+put($pdf, 355, 128.6, v($r['owner_tin']), 9);
+put($pdf, 200, 145.5, v($r['beneficial_user']), 10, true);
+put($pdf, 125, 164.2, v($r['beneficial_address']), 10);
+put($pdf, 112, 181.9, v($r['admin_tel']), 9);
+put($pdf, 355, 181.3, v($r['admin_tin']), 9);
 
 // Building Location
-put($pdf, 140, 228, v($r['street']));
-put($pdf, 140, 251, v($r['barangay']));
-put($pdf, 155, 271.2, v($r['municipality']));
-put($pdf, 155, 296.2, v($r['province']));
-
+put($pdf, 140, 228, v($r['street']), 9);
+put($pdf, 140, 251, v($r['barangay']), 9);
+put($pdf, 140, 275, v($r['municipality']), 9);
+put($pdf, 140, 296.2, v($r['province']), 9);
+    
 // Land Reference
-put($pdf, 370, 220.8, v($r['land_owner']));
-put($pdf, 380, 250.6, v($r['oct_tct_no']));
-put($pdf, 447, 264, v($r['survey_number']));
-put($pdf, 360, 270.7, v($r['lot_number']));
-put($pdf, 480, 271.7, v($r['block_number']));
-put($pdf, 360, 289.4, num($r['land_area']));
+put($pdf, 375, 228, v($r['land_owner']),9);
+put($pdf, 375, 250.6, v($r['oct_tct_no']), 9);
+put($pdf, 490, 250, v($r['survey_number']), 9);
+put($pdf, 375, 275, v($r['lot_number']), 9);
+put($pdf, 490, 275, v($r['block_number']), 9);
+put($pdf, 375, 296.2, num($r['land_area']), 9);
 
 // General Description (y positions for the first 3 rows inferred from
 // the confirmed ~18.2pt spacing of rows below them - OCR missed these
 // specific rows on the blank template, see file header note)
 put($pdf, 150, 340, v($r['building_kind']));
-put($pdf, 400, 340, v($r['building_age']));
+put($pdf, 400, 342.5, v($r['building_age']));
 put($pdf, 150, 358, v($r['structural_type']));
-put($pdf, 400, 358, v($r['storeys']));
-put($pdf, 200, 376, v($r['building_permit_no']));
-put($pdf, 400, 376, num($r['first_floor_area']));
+put($pdf, 400, 360, v($r['storeys']));
+put($pdf, 150, 378, v($r['building_permit_no']));
+put($pdf, 275, 378, v($r['permit_date']));
+put($pdf, 400, 378, num($r['first_floor_area']));
 put($pdf, 250, 394.6, v($r['cct_no']));
-put($pdf, 400, 394.6, num($r['second_floor_area']));
+put($pdf, 400, 395.5, num($r['second_floor_area']));
 put($pdf, 250, 412.8, v($r['cert_completion_date']));
-put($pdf, 400, 412.8, num($r['third_floor_area']));
+put($pdf, 400, 413, num($r['third_floor_area']));
 put($pdf, 250, 430.6, v($r['cert_occupancy_date']));
-put($pdf, 400, 430.6, num($r['fourth_floor_area']));
+put($pdf, 400, 431, num($r['fourth_floor_area']));
 put($pdf, 200, 448.8, v($r['date_constructed']));
 put($pdf, 200, 466.6, v($r['date_occupied']));
 put($pdf, 400, 466.6, num($r['total_floor_area']) . ' sqm', 8, true);
@@ -154,7 +155,7 @@ $roofRows = [
     'Nipa/Anahaw/Cogon' => 725.3, 'Others' => 739,
 ];
 foreach ($roofRows as $name => $y) {
-    mark($pdf, 175, $y, in_array($name, $roofMaterials, true));
+    mark($pdf, 178, $y, in_array($name, $roofMaterials, true));
 }
 // "Concrete Desc" at y=707.5 on the real template has no corresponding
 // checkbox in the data-entry form - cannot be marked, see file header.
@@ -164,7 +165,7 @@ $floorRows = [
     'Wood' => 654, 'Tiles' => 670, 'Others' => 689, 'Bamboo' => 708,
 ];
 foreach ($floorRows as $name => $y) {
-    mark($pdf, 329, $y, in_array($name, $floorMaterials, true));
+    mark($pdf, 330, $y, in_array($name, $floorMaterials, true));
 }
 
 $wallRows = [
@@ -173,7 +174,7 @@ $wallRows = [
     'Sawali' => 707.5, 'Bamboo' => 725.8, 'Others' => 743,
 ];
 foreach ($wallRows as $name => $y) {
-    mark($pdf, 500, $y, in_array($name, $wallMaterials, true));
+    mark($pdf, 501, $y, in_array($name, $wallMaterials, true));
 }
 
 // ============================================================
@@ -182,30 +183,48 @@ foreach ($wallRows as $name => $y) {
 $tpl2 = $pdf->importPage(2);
 $pdf->AddPage();
 $pdf->useTemplate($tpl2);
-
+ 
+// ADDITIONAL ITEMS box at the top of page 2 - a separate, smaller box
+// (2 rows x 3 columns: description/qty/amount) from the itemized "Cost
+// of Additional Items" list inside the Property Appraisal box below.
+// Coordinates found geometrically (column/row border detection) on the
+// blank template since this box has no printed text to OCR against.
+$topItemsY = [24, 36];
+foreach (array_slice($r['items'], 0, 2) as $i => $item) {
+    put($pdf, 73, $topItemsY[$i], v($item['description']), 7);
+    put($pdf, 259, $topItemsY[$i], v($item['qty']), 7);
+    put($pdf, 459, $topItemsY[$i], money($item['amount']), 7);
+}
+ 
 put($pdf, 195, 87.8, money($r['back_unit_construction_cost']));
-put($pdf, 95, 119.5, num($r['total_floor_area']));
-put($pdf, 150, 119.5, money($r['back_unit_construction_cost']));
-put($pdf, 240, 119.5, money($r['building_core_subtotal']));
-put($pdf, 130, 219.8, money($r['building_core_subtotal']));
-put($pdf, 410, 219.8, money($r['total_construction_cost']));
-put($pdf, 130, 235.7, v($r['back_depreciation_rate']) . '%');
-put($pdf, 410, 235.7, money($r['depreciation_cost']));
-put($pdf, 155, 253.0, money($r['depreciation_cost']));
+put($pdf, 84,  117, num($r['total_floor_area']));
+put($pdf, 167, 117, money($r['back_unit_construction_cost']));
+put($pdf, 250, 117, money($r['building_core_subtotal']));
+put($pdf, 230, 219.8, money($r['building_core_subtotal']));
+put($pdf, 480, 219.8, money($r['total_construction_cost']));
+put($pdf, 230, 235.7, v($r['back_depreciation_rate']) . '%');
+put($pdf, 480, 235.7, money($r['depreciation_cost']). '%');
+put($pdf, 230, 253.0, money($r['depreciation_cost']));
 put($pdf, 370, 253.0, money($r['back_market_value']));
-
+ 
 // Cost of Additional Items - itemized list, up to 5 rows before the
-// Sub-Total line at y=204
+// Sub-Total line at y=204. Shows description + qty together since the
+// column is too narrow for 3 separate aligned columns; qty was
+// previously dropped entirely - now included.
 $itemY = 135;
 foreach ($r['items'] as $item) {
     if ($itemY > 195) break; // do not overrun the Sub-Total line
-    put($pdf, 340, $itemY, v($item['description']), 7);
+    $label = v($item['description']);
+    if (v($item['qty']) !== '') {
+        $label .= '  (' . v($item['qty']) . ')';
+    }
+    put($pdf, 340, $itemY, $label, 7);
     put($pdf, 480, $itemY, money($item['amount']), 7);
     $itemY += 17;
 }
 $itemsTotal = array_sum(array_column($r['items'], 'amount'));
 put($pdf, 480, 204, money($itemsTotal), 8, true);
-
+ 
 // Property Assessment (single row - see activity-log.md re: table only
 // supporting one actual-use row currently)
 put($pdf, 115, 315, v($r['back_actual_use']));
@@ -213,22 +232,22 @@ put($pdf, 230, 315, money($r['back_assess_market_value']));
 put($pdf, 345, 315, v($r['back_assessment_level']) . '%');
 put($pdf, 475, 315, money($r['back_assessed_value']));
 put($pdf, 475, 362.4, money($r['back_total_assessed_value']), 8, true);
-
-mark($pdf, 118, 389, $r['taxability'] === 'Taxable');
+ 
+mark($pdf, 94, 389, $r['taxability'] === 'Taxable');
 mark($pdf, 178, 389, $r['taxability'] === 'Exempt');
 put($pdf, 466, 388.8, v($r['effectivity_quarter']));
 put($pdf, 520, 388.8, v($r['effectivity_year']));
-
-put($pdf, 90, 465, v($r['appraised_by_name']), 8);
-put($pdf, 230, 465, v($r['appraised_by_date']), 8);
-put($pdf, 350, 465, v($r['recommending_approval_name']), 8);
-put($pdf, 460, 465, v($r['recommending_approval_date']), 8);
-
+ 
+put($pdf, 103, 455, v($r['appraised_by_name']), 9);
+put($pdf, 235, 455, v($r['appraised_by_date']), 8);
+put($pdf, 370, 455, v($r['recommending_approval_name']), 8);
+put($pdf, 460, 455, v($r['recommending_approval_date']), 8);
+ 
 put($pdf, 150, 515, v($r['approved_by_name']), 8, true);
 put($pdf, 345, 515, v($r['approved_by_date']), 8);
-
+ 
 put($pdf, 80, 558, v($r['memoranda']), 8);
-
+ 
 // Record of Superseded Assessment
 put($pdf, 110, 701.8, v($latestSuperseded['pin'] ?? ''));
 put($pdf, 400, 701.8, v($latestSuperseded['arp_no'] ?? ''), 8, true);
@@ -238,7 +257,7 @@ put($pdf, 150, 740.2, v($latestSuperseded['previous_owner'] ?? ''));
 put($pdf, 385, 740.2, v($latestSuperseded['ar_page'] ?? ''));
 put($pdf, 180, 763.7, v($latestSuperseded['recorder'] ?? ''));
 put($pdf, 350, 763.7, v($latestSuperseded['record_date'] ?? ''));
-
+ 
 faas_pdf_mark_generated($conn, $id);
-
+ 
 $pdf->Output('I', 'FAAS-Building-' . preg_replace('/[^A-Za-z0-9-]/', '', $r['arp_no']) . '.pdf');
