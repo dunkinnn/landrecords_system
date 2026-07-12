@@ -234,26 +234,26 @@ put($pdf, 480, 204, money($itemsTotal), 9, true);
  
 // Property Assessment (single row - see activity-log.md re: table only
 // supporting one actual-use row currently)
-put($pdf, 115, 315, v($r['back_actual_use']), 9);
-put($pdf, 230, 315, money($r['back_assess_market_value']), 9);
-put($pdf, 345, 315, v($r['back_assessment_level']) . '%', 9);
-put($pdf, 475, 315, money($r['back_assessed_value']), 9);
+put($pdf, 115, 315, v($r['back_actual_use']));
+put($pdf, 230, 315, money($r['back_assess_market_value']));
+put($pdf, 345, 315, v($r['back_assessment_level']) . '%');
+put($pdf, 475, 315, money($r['back_assessed_value']));
 put($pdf, 475, 362.4, money($r['back_total_assessed_value']), 9, true);
  
 mark($pdf, 94, 389, $r['taxability'] === 'Taxable');
 mark($pdf, 178, 389, $r['taxability'] === 'Exempt');
-put($pdf, 466, 388.8, v($r['effectivity_quarter']), 9);
-put($pdf, 520, 388.8, v($r['effectivity_year']), 9);
+put($pdf, 466, 388.8, v($r['effectivity_quarter']));
+put($pdf, 520, 388.8, v($r['effectivity_year']));
  
-put($pdf, 100, 452, v($r['appraised_by_name']), 9);
-put($pdf, 230, 452, v($r['appraised_by_date']), 9);
-put($pdf, 365, 452, v($r['recommending_approval_name']), 9);
-put($pdf, 500, 452, v($r['recommending_approval_date']), 9);
+put($pdf, 103, 455, v($r['appraised_by_name']), 9, True);
+put($pdf, 235, 455, v($r['appraised_by_date']), 8, True);
+put($pdf, 370, 455, v($r['recommending_approval_name']), 9, True);
+put($pdf, 500, 455, v($r['recommending_approval_date']), 8, True);
  
-put($pdf, 162, 508, v($r['approved_by_name']), 13   , true);
-put($pdf, 330, 510, v($r['approved_by_date']), 9, true);
+put($pdf, 175, 514, v($r['approved_by_name']), 9, true);
+put($pdf, 330, 515, v($r['approved_by_date']), 8, true);
  
-putMulti($pdf, 75, 553, 480, v($r['memoranda']), 9, false, 10);
+putMulti($pdf, 75, 553, 480, v($r['memoranda']), 8, false, 10);
  
 // Record of Superseded Assessment
 put($pdf, 110, 701.8, v($latestSuperseded['pin'] ?? ''));

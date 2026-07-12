@@ -245,13 +245,13 @@ mark($pdf, 178, 389, $r['taxability'] === 'Exempt');
 put($pdf, 466, 388.8, v($r['effectivity_quarter']), 9);
 put($pdf, 520, 388.8, v($r['effectivity_year']), 9);
  
-put($pdf, 100, 452, v($r['appraised_by_name']), 9);
-put($pdf, 230, 452, v($r['appraised_by_date']), 9);
-put($pdf, 365, 452, v($r['recommending_approval_name']), 9);
-put($pdf, 500, 452, v($r['recommending_approval_date']), 9);
+put($pdf, 103, 455, v($r['appraised_by_name']), 9);
+put($pdf, 235, 455, v($r['appraised_by_date']), 9);
+put($pdf, 370, 455, v($r['recommending_approval_name']), 9);
+put($pdf, 500, 455, v($r['recommending_approval_date']), 9);
  
-put($pdf, 162, 508, v($r['approved_by_name']), 13   , true);
-put($pdf, 330, 510, v($r['approved_by_date']), 9, true);
+put($pdf, 165, 512, v($r['approved_by_name']), 13, true);
+put($pdf, 330, 515, v($r['approved_by_date']), 9, true);
  
 putMulti($pdf, 75, 553, 480, v($r['memoranda']), 9, false, 10);
  
