@@ -271,6 +271,19 @@
         <h6 class="border-bottom pb-2 fw-bold">Floor Plan</h6>
     </div>
 
+    <input type="hidden" name="floor_plan_path" id="floor_plan_path">
+
+    <div class="col-md-6">
+        <label class="form-label">Attach building plan, sketch, or photograph</label>
+        <input type="file" class="form-control" id="floor_plan_file" accept="image/png,image/jpeg,image/gif,image/webp">
+        <div class="form-text">JPG, PNG, GIF, or WEBP, up to 5MB.</div>
+        <div id="floor_plan_upload_status" class="small mt-1"></div>
+    </div>
+
+    <div class="col-md-6">
+        <img id="floor_plan_preview" src="" alt="Floor plan preview" class="img-thumbnail d-none" style="max-height:180px;">
+    </div>
+
     <!-- ============================================================ -->
     <!-- STRUCTURAL MATERIALS (Checklist) -->
     <!-- ============================================================ -->
@@ -519,6 +532,60 @@
         if (el) el.addEventListener('input', computeFAAS);
     });
 
+    /* Floor Plan image: upload immediately on selection, store the
+       returned path in the hidden field that rides along with the
+       normal JSON save, and show a thumbnail preview. */
+    var floorPlanFile = document.getElementById('floor_plan_file');
+    var floorPlanPathField = document.getElementById('floor_plan_path');
+    var floorPlanPreview = document.getElementById('floor_plan_preview');
+    var floorPlanStatus = document.getElementById('floor_plan_upload_status');
+
+    if (floorPlanFile) {
+        floorPlanFile.addEventListener('change', function () {
+            var file = floorPlanFile.files[0];
+            if (!file) return;
+
+            floorPlanStatus.textContent = 'Uploading...';
+            floorPlanStatus.className = 'small mt-1 text-muted';
+
+            var formData = new FormData();
+            formData.append('floor_plan', file);
+
+            fetch('/landrecords_system/api/faas_floor_plan_upload.php', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+                .then(function (res) {
+                    return res.text().then(function (text) {
+                        try {
+                            return text ? JSON.parse(text) : {};
+                        } catch (e) {
+                            return { error: text || 'Upload failed. Check your connection and try again.' };
+                        }
+                    });
+                })
+                .then(function (result) {
+                    if (result.error) {
+                        floorPlanStatus.textContent = result.error;
+                        floorPlanStatus.className = 'small mt-1 text-danger';
+                        return;
+                    }
+                    floorPlanPathField.value = result.path;
+                    floorPlanPreview.src = '/landrecords_system/' + result.path;
+                    floorPlanPreview.classList.remove('d-none');
+                    floorPlanStatus.textContent = 'Uploaded.';
+                    floorPlanStatus.className = 'small mt-1 text-success';
+                })
+                .catch(function () {
+                    floorPlanStatus.textContent = 'Upload failed. Check your connection and try again.';
+                    floorPlanStatus.className = 'small mt-1 text-danger';
+                });
+        });
+    }
+
     /* Required-field validation before moving to the back page.
        Floor areas 2-4 and the "Others" specify text fields are required
        conditionally, since an unconditional requirement would make valid
@@ -592,9 +659,6 @@
 
     /* Clear a field's invalid state as soon as the user fixes it, instead of
        waiting until the next validation pass. */
-    // Delegated handlers: attach to document so sanitizer works regardless
-    // of when the form is inserted/visible. We scope to elements inside
-    // `#faas_step_front` to avoid affecting other parts of the app.
     (function () {
         function sanitizeAndPreserveCursor(el) {
             if (!el || (el.tagName !== 'INPUT' && el.tagName !== 'TEXTAREA')) return;
@@ -701,6 +765,14 @@
             }
         });
     }
+
+    /* Show the floor plan preview if a record with one is loaded (edit mode). */
+    document.addEventListener('faas:populated', function () {
+        if (floorPlanPathField.value) {
+            floorPlanPreview.src = '/landrecords_system/' + floorPlanPathField.value;
+            floorPlanPreview.classList.remove('d-none');
+        }
+    });
 
 })();
 </script>

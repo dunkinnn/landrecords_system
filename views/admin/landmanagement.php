@@ -1,5 +1,4 @@
 <?php
-session_start();
 require_once '../../includes/auth.php';
 require_once '../../includes/form_template_loader.php';
 require_once '../../includes/db.php';
@@ -159,7 +158,6 @@ $stmt->close();
 							<th>Area (sqm)</th>
 							<th>Tax Dec. No</th>
 							<th>Assessed Value</th>
-							<th>Status</th>
 							<th>Actions</th>
 						</tr>
 

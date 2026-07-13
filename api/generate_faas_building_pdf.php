@@ -256,14 +256,14 @@ put($pdf, 330, 510, v($r['approved_by_date']), 9, true);
 putMulti($pdf, 75, 553, 480, v($r['memoranda']), 9, false, 10);
  
 // Record of Superseded Assessment
-put($pdf, 110, 701.8, v($latestSuperseded['pin'] ?? ''));
-put($pdf, 400, 701.8, v($latestSuperseded['arp_no'] ?? ''), 8, true);
-put($pdf, 170, 720, money($latestSuperseded['assessed_value'] ?? null));
-put($pdf, 420, 720, v($latestSuperseded['effectivity'] ?? ''));
-put($pdf, 150, 740.2, v($latestSuperseded['previous_owner'] ?? ''));
-put($pdf, 385, 740.2, v($latestSuperseded['ar_page'] ?? ''));
-put($pdf, 180, 763.7, v($latestSuperseded['recorder'] ?? ''));
-put($pdf, 350, 763.7, v($latestSuperseded['record_date'] ?? ''));
+put($pdf, 110, 701, v($latestSuperseded['pin'] ?? ''), 9, true);
+put($pdf, 400, 701, v($latestSuperseded['arp_no'] ?? ''), 9, true);
+put($pdf, 170, 719, money($latestSuperseded['assessed_value'] ?? null), 9, true);
+put($pdf, 430, 719, v($latestSuperseded['effectivity'] ?? ''), 9, true);
+put($pdf, 160, 740.2, v($latestSuperseded['previous_owner'] ?? ''), 9, true);
+put($pdf, 385, 740.2, v($latestSuperseded['ar_page'] ?? ''), 9, true);
+put($pdf, 160, 763, v($latestSuperseded['recorder'] ?? ''), 9, true);
+put($pdf, 355, 763, v($latestSuperseded['record_date'] ?? ''), 9, true);
  
 faas_pdf_mark_generated($conn, $id);
  
